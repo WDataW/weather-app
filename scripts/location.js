@@ -1,6 +1,6 @@
 
 /* 
-*it fetches an array of locations from nominatim.openstreetmap api.
+*fetchLocations fetches an array of locations from nominatim.openstreetmap api.
 *@param {string} locationName - the location name entered by the user.
 *@returns {array} locationsData - it contains the locations that matches the locationName.
 */
@@ -14,7 +14,7 @@ export async function fetchLocations(locationName) {
     }
     const locationsData = await locationResponse.json();
     return locationsData;
-  } catch (error) {
+  }catch(error){
     console.error(error);
   }
 }
