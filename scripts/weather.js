@@ -7,7 +7,7 @@
 export async function fetchWeather(location) {
     try {
       const weatherResponse =
-        await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=temperature_2m_min,temperature_2m_max,sunset,sunrise&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,rain,visibility,wind_direction_10m,wind_speed_10m`);
+        await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=cloud_cover,rain,snowfall,temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=temperature_2m_min,temperature_2m_max,sunset,sunrise,rain_sum,snowfall_sum&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,rain,snowfall,wind_direction_10m,wind_speed_10m&timezone=auto`);
       if(!weatherResponse.ok){
         throw new Error("An Error Occured While Fetching The Weather.");
       } 
