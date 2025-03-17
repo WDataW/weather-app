@@ -14,8 +14,6 @@ export async function fetchLocations(locationName) {
     }
     const locationsData = await locationResponse.json();
     const filteredLocations=filterLocationsArray(locationsData);
-    console.log(locationsData);
-    console.log(filteredLocations);
     return filteredLocations;
   }catch(error){
     console.error(error);
@@ -30,7 +28,7 @@ export async function fetchLocations(locationName) {
 */
 function filterLocationsArray(locationsArray){
   const filteredArray=locationsArray.filter((location)=>{
-    return location["addresstype"]==="city" || location["addresstype"]==="town";
+    return location["addresstype"]==="city" || location["addresstype"]==="town" || location["addresstype"]==="province";
   });
   return filteredArray;
 }
