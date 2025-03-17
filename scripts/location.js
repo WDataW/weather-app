@@ -7,17 +7,35 @@
 export async function fetchLocations(locationName) {
   try {
     const locationResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${locationName}&addressdetails=1&format=jsonv2&limit=10`
+      `https://nominatim.openstreetmap.org/search?city=${locationName}&featureType=city&addressdetails=1&format=jsonv2&limit=10`
     );
     if (!locationResponse.ok) {
       throw new Error("An Error Occured While Fetching The Location.");
     }
     const locationsData = await locationResponse.json();
-    return locationsData;
+    const filteredLocations=filterLocationsArray(locationsData);
+    console.log(locationsData);
+    console.log(filteredLocations);
+    return filteredLocations;
   }catch(error){
     console.error(error);
   }
 }
+
+
+/* 
+* filterLocationsArray filters an array containing locations and returns an array containing only cities or towns.
+* @param {array} locationsArray - array containg the locations (each location is an object).
+* @returns {array} filteredArray - array containing cities or towns only.
+*/
+function filterLocationsArray(locationsArray){
+  const filteredArray=locationsArray.filter((location)=>{
+    return location["addresstype"]==="city" || location["addresstype"]==="town";
+  });
+  return filteredArray;
+}
+
+
 
 /* 
 * constructLocationName creates the location name to be displayed to the user.
