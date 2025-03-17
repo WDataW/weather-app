@@ -11,6 +11,7 @@ getLocations.addEventListener("click", async function () {
     const locationName=locationField.value;
     if(locationName.trim()){// to check that 'locationField' value isn't empty.
       const locations = await fetchLocations(locationName); // getting the locations matching 'locationName'.
+      console.log(locations);
       const locationOptions= displayLocations(locations); // displaying the locations to the user. LocationOptions refers to the container.
       locationOptions.addEventListener("click", async function (event) {
         try{
