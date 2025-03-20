@@ -6,17 +6,23 @@
       name="description"
       content="the best website to check the weather in Canada."
     />
-
+    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CanadaWeather.com</title>
     <script type="module" src="scripts/app.js" defer></script>
   </head>
   <body>
-    <header></header>
+    <header>
+      <div class="location-container">
+        <span class="location-icon"></span>
+        <span class="location">Demascus, Syria.</span>
+      </div>
+      <div class="search-container">
+        <input type="text" name="locationSearch" placeholder="Enter City Name">
+      </div>
+    </header>
     <main>
-      <input type="search" class="specify-location" />
-      <input type="submit" class="fetch-location" />
     </main>
     <footer></footer>
   </body>

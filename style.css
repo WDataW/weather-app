@@ -1,0 +1,62 @@
+
+@font-face {
+    font-family: "AbeeZeeRegular";
+    src: url(fonts/ABeeZee-Regular.ttf) format(truetype);
+    font-weight: normal;
+    font-style: normal;
+}
+body{
+    font:15px/1.5 "AbeeZeeRegular" ;   
+
+    margin: 0;
+    padding: 0  ;
+    aspect-ratio: 1/2   ;
+    background-color:   rgba(10, 40, 100, 1) ;
+    background:linear-gradient(150deg,#08244F 0%, #134CB5 47%, #0B42AB 100% );
+
+}
+/* start of header section */
+header{
+    margin-top: 30px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between  ;
+    align-items: center;
+    padding: 0 30px 0 30px;
+}
+.location-container{
+    min-width: 40%;
+    max-width: 50%;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+.location-icon{
+    display: inline-block;
+    height: 27px;
+    width: 27px;
+    margin-right: 5px;
+    background: url(images/icons/location.svg) no-repeat 0 0/27px 27px;
+}
+.location{
+    display: inline-block;
+    color:white;
+    text-wrap: nowrap; 
+}
+.search-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 50%;
+}
+.search-container input{
+    box-sizing: border-box;
+    border-radius: 20px;
+    height: 27px;
+    width: 130px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    outline-color: transparent;
+    padding: 0 10px 0 10px;
+}
