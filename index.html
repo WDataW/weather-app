@@ -6,7 +6,7 @@
       name="description"
       content="the best website to check the weather in Canada."
     />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CanadaWeather.com</title>
@@ -19,13 +19,17 @@
         <span class="location">Demascus, Syria.</span>
       </div>
       <div class="search-container">
-        <input type="text" name="locationSearch" placeholder="Enter City Name">
+        <input
+          type="text"
+          name="locationSearch"
+          placeholder="Enter City Name"
+        />
       </div>
     </header>
     <main>
       <div class="weather-container">
         <div class="weather-icon">
-          <img src="images/weather-icons/day/cloudy.svg" alt="">
+          <img src="images/weather-icons/day/cloudy.svg" alt="" />
         </div>
         <div class="temperatures">
           <pre class="current"> 26°</pre>
@@ -40,13 +44,52 @@
           <div class="humidity">
             <span class="icon"></span>
             <span>90%</span>
-          </div>          
+          </div>
           <div class="wind-speed">
             <span class="icon"></span>
             <span>19 km/h</span>
           </div>
-
-         </div>
+        </div>
+        <div class="hourly-weather">
+          <!-- displays weather by the hour -->
+          <div class="day">
+            <!-- contains 'Today' + today's date -->
+            <span>Today</span>
+            <span class="date">March 22</span>
+          </div>
+          <div class="hours">
+            <!-- represents the container for each 'hour' -->
+            <div class="hour">
+              <!-- contains temperature + mini weather icon + time -->
+              <p class="temperature">25°C</p>
+              <div class="mini-icon">
+                <img src="images/weather-icons/day/clear.svg" alt="" />
+              </div>
+              <p class="time">12:00</p>
+            </div>
+            <div class="hour">
+              <p class="temperature">24°C</p>
+              <div class="mini-icon">
+                <img src="images/weather-icons/day/clear.svg" alt="" />
+              </div>
+              <p class="time">13:00</p>
+            </div>
+            <div class="hour">
+              <p class="temperature">22°C</p>
+              <div class="mini-icon">
+                <img src="images/weather-icons/day/clear.svg" alt="" />
+              </div>
+              <p class="time">14:00</p>
+            </div>
+            <div class="hour">
+              <p class="temperature">23°C</p>
+              <div class="mini-icon">
+                <img src="images/weather-icons/day/clear.svg" alt="" />
+              </div>
+              <p class="time">15:00</p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <footer></footer>
