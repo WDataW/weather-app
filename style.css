@@ -1,142 +1,197 @@
-
 @font-face {
-    font-family: "AbeeZeeRegular";
-    src: url(fonts/ABeeZee-Regular.ttf) format(truetype);
-    font-weight: normal;
-    font-style: normal;
+  font-family: "AbeeZeeRegular";
+  src: url(fonts/ABeeZee-Regular.ttf) format(truetype);
+  font-weight: normal;
+  font-style: normal;
 }
-body{
-    font:15px/1.5 "AbeeZeeRegular" ;   
+body {
+  font: 15px/1.5 "AbeeZeeRegular";
 
-    margin: 0;
-    padding: 0 30px;
-    height: 100vh;
-    background-color:   rgba(10, 40, 100, 1) ;
-    background:linear-gradient(150deg,#08244F 0%, #134CB5 47%, #0B42AB 100% );
-
+  margin: 0;
+  padding: 0 30px;
+  height: 100vh;
+  background-color: rgba(10, 40, 100, 1);
+  background: linear-gradient(150deg, #08244f 0%, #134cb5 47%, #0b42ab 100%);
 }
 /* start of header section */
-header{
-    margin-top: 30px;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between  ;
-    align-items: center;
+header {
+  margin-top: 30px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
 }
-.location-container{
-    min-width: 40%;
-    max-width: 50%;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
+.location-container {
+  min-width: 40%;
+  max-width: 50%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
-.location-icon{
-    display: inline-block;
-    height: 27px;
-    width: 27px;
-    margin-right: 5px;
-    background: url(images/icons/location.svg) no-repeat 0 0/27px 27px;
+.location-icon {
+  display: inline-block;
+  height: 27px;
+  width: 27px;
+  margin-right: 5px;
+  background: url(images/icons/location.svg) no-repeat 0 0/27px 27px;
 }
-.location{
-    display: inline-block;
-    color:white;
-    text-wrap: nowrap; 
+.location {
+  display: inline-block;
+  color: white;
+  text-wrap: nowrap;
 }
-.search-container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 50%;
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 50%;
 }
-.search-container input{
-    box-sizing: border-box;
-    border-radius: 20px;
-    height: 27px;
-    width: 130px;
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-    outline-color: transparent;
-    padding: 0 10px;
+.search-container input {
+  box-sizing: border-box;
+  border-radius: 20px;
+  height: 27px;
+  width: 130px;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  outline-color: transparent;
+  padding: 0 10px;
 }
 
 /* start of main section */
-main{
-    margin-top: 30px;
+main {
+  margin-top: 30px;
 }
 
-.weather-container{
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center ;
+.weather-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 /* weather icon */
-.weather-icon{
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1/0.33;
-    margin-bottom: 10px;
+.weather-icon {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/0.33;
+  margin-bottom: 10px;
 }
 .weather-icon img {
-    position: absolute;
-    max-width: 65%;
-    top:50% ;
-    left: 50%;
-    transform: translate(-50%,-48%);
+  position: absolute;
+  max-width: 65%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -48%);
 }
 
 /* temperatures */
-.temperatures{
-    color: white;
-    font-weight: bold;
-    margin-bottom: 20px;
-    
+.temperatures {
+  color: white;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 .temperatures pre {
-    margin: 0;
-    text-align: center;
-    font: 15px/1.3 "AbeeZeeRegular";
-    display: inline-block;
+  margin: 0;
+  text-align: center;
+  font: 15px/1.3 "AbeeZeeRegular";
+  display: inline-block;
 }
-.temperatures .current{
-    display: block;
-    font: 60px/1.3 sans-serif;
-}    
+.temperatures .current {
+  display: block;
+  font: 60px/1.3 sans-serif;
+}
 
 /* stats */
-.stats{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    height: 47px;
-    border-radius: 20px;
-    background-color: rgba(0, 16, 38, 0.3);
-    padding: 0 20px;
-    margin-bottom: 20px;
+.stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 47px;
+  border-radius: 20px;
+  background-color: rgba(0, 16, 38, 0.3);
+  padding: 0 20px;
+  margin-bottom: 20px;
 }
-.stats div{
-    color: white;
-    opacity: 100%;
-    height: 34px;
-    display: flex;
-    align-items: center;
+.stats div {
+  color: white;
+  opacity: 100%;
+  height: 34px;
+  display: flex;
+  align-items: center;
 }
 
-.precipitation .icon{
-    height: 26px;
-    aspect-ratio: 1/1;
-    background: url(images/icons/precipitation.svg) no-repeat center center/22px 22px;
+.precipitation .icon {
+  height: 26px;
+  aspect-ratio: 1/1;
+  background: url(images/icons/precipitation.svg) no-repeat center center/22px
+    22px;
 }
-.humidity .icon{
-    height: 26px;
-    aspect-ratio: 1/1;
-    background: url(images/icons/humidity.svg) no-repeat center center/18px 18px;
+.humidity .icon {
+  height: 26px;
+  aspect-ratio: 1/1;
+  background: url(images/icons/humidity.svg) no-repeat center center/18px 18px;
 }
-.wind-speed .icon{
-    height: 26px;
-    aspect-ratio: 1/1;
-    background: url(images/icons/wind.svg) no-repeat center center/16px 16px;
+.wind-speed .icon {
+  height: 26px;
+  aspect-ratio: 1/1;
+  background: url(images/icons/wind.svg) no-repeat center center/16px 16px;
+}
+
+/* hourly weather */
+.hourly-weather {
+  height: 200px;
+  width: 100%;
+  padding: 18px;
+  border-radius: 20px;
+  background-color: rgba(0, 16, 38, 0.3);
+  color: white;
+}
+.day {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.hourly-weather span:first-child {
+  /* referring to the word 'Today' */
+  font-size: 20px;
+  font-weight: bold;
+}
+.hourly-weather .date {
+  font-size: 18px;
+}
+.hours {
+  /* the container of all 'hour' divs */
+  display: flex;
+  flex-flow: row nowrap;
+  height: 155px;
+}
+.hour {
+  /* the container for temperature + mini weather icon + time*/
+  font-size: 18px;
+  flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+.hour p {
+  text-align: center;
+  margin: 0;
+}
+.hour .mini-icon {
+  margin: 0;
+  height: 47px;
+  aspect-ratio: 1/1;
+  position: relative;
+}
+
+.hour img {
+  position: absolute;
+  transform: translate(-24%, -21%);
+  width: 200%;
+  height: auto;
 }
