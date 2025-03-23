@@ -4,15 +4,17 @@
   font-weight: normal;
   font-style: normal;
 }
+
 body {
   font: 15px/1.5 "AbeeZeeRegular";
 
   margin: 0;
   padding: 0 30px;
-  height: 100vh;
   background-color: rgba(10, 40, 100, 1);
   background: linear-gradient(150deg, #08244f 0%, #134cb5 47%, #0b42ab 100%);
+  background-attachment: fixed;
 }
+
 /* start of header section */
 header {
   margin-top: 30px;
@@ -62,7 +64,18 @@ header {
 main {
   margin-top: 30px;
 }
-
+.celesius::after {
+  content: "°C";
+  vertical-align: super;
+  font-size: xx-small;
+}
+.container {
+  border-radius: 20px;
+  background-color: rgba(0, 16, 38, 0.3);
+  color: white;
+  width: 100%;
+  margin-bottom: 20px;
+}
 .weather-container {
   display: flex;
   flex-flow: row wrap;
@@ -101,22 +114,19 @@ main {
   display: block;
   font: 60px/1.3 sans-serif;
 }
-
+.temperatures .max {
+  margin-right: 5px;
+}
 /* stats */
 .stats {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 100%;
   height: 47px;
-  border-radius: 20px;
-  background-color: rgba(0, 16, 38, 0.3);
   padding: 0 20px;
-  margin-bottom: 20px;
 }
 .stats div {
   color: white;
-  opacity: 100%;
   height: 34px;
   display: flex;
   align-items: center;
@@ -142,13 +152,9 @@ main {
 /* hourly weather */
 .hourly-weather {
   height: 200px;
-  width: 100%;
   padding: 18px;
-  border-radius: 20px;
-  background-color: rgba(0, 16, 38, 0.3);
-  color: white;
 }
-.day {
+.hourly-weather .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -178,6 +184,9 @@ main {
   justify-content: space-around;
   align-items: center;
 }
+.hour:not(:last-child) {
+  margin-right: 10px;
+}
 .hour p {
   text-align: center;
   margin: 0;
@@ -194,4 +203,63 @@ main {
   transform: translate(-24%, -21%);
   width: 200%;
   height: auto;
+}
+
+/* start of daily weather sectiom */
+.daily-weather {
+  padding: 18px;
+}
+.daily-weather .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.daily-weather span {
+  display: inline-block;
+}
+.daily-weather .header span:first-child {
+  /* referring to 'Daily Forecast' text */
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.daily-weather .calendar-icon {
+  height: 24px;
+  width: 24px;
+  background: url(images/icons/calendar.svg) no-repeat center center/24px 24px;
+}
+
+.day {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.day .name {
+  font-family: monospace;
+}
+.day span {
+  font-size: 16px;
+}
+.day .mini-icon {
+  height: 50px;
+  width: 50px;
+}
+.day img {
+  max-width: 100%;
+}
+
+.temperature-range {
+  width: 77.5px;
+}
+
+.temperature-range span {
+  width: 47%;
+  text-align: right;
+  font-family: monospace;
+}
+
+.temperature-range span:last-child {
+  color: rgba(255, 255, 255, 0.5);
 }
