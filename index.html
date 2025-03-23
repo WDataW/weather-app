@@ -33,10 +33,10 @@
         </div>
         <div class="temperatures">
           <pre class="current"> 26°</pre>
-          <pre class="min">Min: 20°   </pre>
           <pre class="max">Max: 31°</pre>
+          <pre class="min">Min: 20°</pre>
         </div>
-        <div class="stats">
+        <div class="stats container">
           <div class="precipitation">
             <span class="icon"></span>
             <span>4%</span>
@@ -50,9 +50,9 @@
             <span>19 km/h</span>
           </div>
         </div>
-        <div class="hourly-weather">
+        <div class="hourly-weather container">
           <!-- displays weather by the hour -->
-          <div class="day">
+          <div class="header">
             <!-- contains 'Today' + today's date -->
             <span>Today</span>
             <span class="date">March 22</span>
@@ -61,32 +61,98 @@
             <!-- represents the container for each 'hour' -->
             <div class="hour">
               <!-- contains temperature + mini weather icon + time -->
-              <p class="temperature">25°C</p>
+              <p class="temperature celesius">25</p>
               <div class="mini-icon">
                 <img src="images/weather-icons/day/clear.svg" alt="" />
               </div>
               <p class="time">12:00</p>
             </div>
             <div class="hour">
-              <p class="temperature">24°C</p>
+              <p class="temperature celesius">24</p>
               <div class="mini-icon">
-                <img src="images/weather-icons/day/clear.svg" alt="" />
+                <img src="images/weather-icons/day/cloudy.svg" alt="" />
               </div>
               <p class="time">13:00</p>
             </div>
             <div class="hour">
-              <p class="temperature">22°C</p>
+              <p class="temperature celesius">22</p>
               <div class="mini-icon">
                 <img src="images/weather-icons/day/clear.svg" alt="" />
               </div>
               <p class="time">14:00</p>
             </div>
             <div class="hour">
-              <p class="temperature">23°C</p>
+              <p class="temperature celesius">23</p>
               <div class="mini-icon">
-                <img src="images/weather-icons/day/clear.svg" alt="" />
+                <img src="images/weather-icons/day/partly-cloudy.svg" alt="" />
               </div>
               <p class="time">15:00</p>
+            </div>
+          </div>
+        </div>
+        <div class="daily-weather container">
+          <div class="header">
+            <span> Daily Forecast </span>
+            <span class="calendar-icon"> </span>
+          </div>
+          <div class="day">
+            <span class="name">Sun</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/cloudy.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">15</span>
+              <span class="celesius">13</span>
+            </div>
+          </div>
+          <div class="day">
+            <span class="name">Mon</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/clear.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">21</span>
+              <span class="celesius">-72</span>
+            </div>
+          </div>
+          <div class="day">
+            <span class="name">Tue</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/partly-cloudy.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">9</span>
+              <span class="celesius">4</span>
+            </div>
+          </div>
+          <div class="day">
+            <span class="name">Wed</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/clear.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">23</span>
+              <span class="celesius">13</span>
+            </div>
+          </div>
+          <div class="day">
+            <span class="name">Thu</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/cloudy.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">17</span>
+              <span class="celesius">7</span>
+            </div>
+          </div>
+          <div class="day">
+            <span class="name">Fri</span>
+            <div class="mini-icon">
+              <img src="images/weather-icons/day/clear.svg" alt="" />
+            </div>
+            <div class="temperature-range">
+              <span class="celesius">1</span>
+              <span class="celesius">0</span>
             </div>
           </div>
         </div>
