@@ -62,7 +62,16 @@ export function constructLocationName(locationsArray, indexOfLocation) {
   return locationName;
 }
 
+
+/* 
+* getIpLocation gets the user location based on their IP address
+* @returns {object} data - contains the user's IP location info
+*/
 export async function getIpLocation() {
+  /* 
+  * getUserIp gets the user IP address
+  * returns {string} - the user's IP address
+  */
   async function getUserIp() {
     try {
       const response = await fetch("http://edns.ip-api.com/json");
