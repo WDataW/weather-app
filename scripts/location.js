@@ -1,9 +1,9 @@
+/*
+ *fetchLocations fetches an array of locations from nominatim.openstreetmap api.
+ *@param {string} locationName - the location name entered by the user.
+ *@returns {array} locationsData - it contains the locations that matches the locationName.
+ */
 
-/* 
-*fetchLocations fetches an array of locations from nominatim.openstreetmap api.
-*@param {string} locationName - the location name entered by the user.
-*@returns {array} locationsData - it contains the locations that matches the locationName.
-*/
 export async function fetchLocations(locationName) {
   try {
     const locationResponse = await fetch(
@@ -13,43 +13,77 @@ export async function fetchLocations(locationName) {
       throw new Error("An Error Occured While Fetching The Location.");
     }
     const locationsData = await locationResponse.json();
-    const filteredLocations=filterLocationsArray(locationsData);
+    const filteredLocations = filterLocationsArray(locationsData);
     return filteredLocations;
-  }catch(error){
+  } catch (error) {
     console.error(error);
   }
 }
 
-
-/* 
-* filterLocationsArray filters an array containing locations and returns an array containing only cities or towns.
-* @param {array} locationsArray - array containg the locations (each location is an object).
-* @returns {array} filteredArray - array containing cities or towns only.
-*/
-function filterLocationsArray(locationsArray){
-  const filteredArray=locationsArray.filter((location)=>{
-    return location["addresstype"]==="city" || location["addresstype"]==="town" || location["addresstype"]==="province";
+/*
+ * filterLocationsArray filters an array containing locations and returns an array containing only cities or towns.
+ * @param {array} locationsArray - array containg the locations (each location is an object).
+ * @returns {array} filteredArray - array containing cities or towns only.
+ */
+function filterLocationsArray(locationsArray) {
+  const filteredArray = locationsArray.filter((location) => {
+    return (
+      location["addresstype"] === "city" ||
+      location["addresstype"] === "town" ||
+      location["addresstype"] === "province"
+    );
   });
   return filteredArray;
 }
 
+/*
+ * constructLocationName creates the location name to be displayed to the user.
+ * @param {array} locationsArray - it contains all the locations fetched by fetchLocations function.
+ * @param {number} indexOfLocation - it represents the index of a specific location in the array.
+ * @returns {string} locationName - it represents the constructed name of the location.
+ */
+export function constructLocationName(locationsArray, indexOfLocation) {
+  const location = locationsArray[indexOfLocation];
+  const locationAddress = location["address"];
+  let locationName = "";
+  for (const key in locationAddress) {
+    if (
+      key == "town" ||
+      key == "city" ||
+      key == "county" ||
+      key == "state" ||
+      key == "province" ||
+      key == "country"
+    ) {
+      locationName += `${locationAddress[key]}, `;
+    }
+  }
+  locationName = `${locationName.slice(0, locationName.length - 2)}.`;
+  return locationName;
+}
 
 
 /* 
-* constructLocationName creates the location name to be displayed to the user.
-* @param {array} locationsArray - it contains all the locations fetched by fetchLocations function. 
-* @param {number} indexOfLocation - it represents the index of a specific location in the array. 
-* @returns {string} locationName - it represents the constructed name of the location.
+* getIpLocation gets the user location based on their IP address
+* @returns {object} data - contains the user's IP location info
 */
-export function constructLocationName(locationsArray,indexOfLocation){
-  const location=locationsArray[indexOfLocation];
-  const locationAddress=location["address"];
-  let locationName="";
-  for(const key in locationAddress){
-    if(key=="town" || key=="city" || key=="county" || key=="state" ||key=="province" || key=="country"){
-    locationName+=`${locationAddress[key]}, `
-    }
+export async function getIpLocation() {
+  /* 
+  * getUserIp gets the user IP address
+  * returns {string} - the user's IP address
+  */
+  async function getUserIp() {
+    try {
+      const response = await fetch("http://edns.ip-api.com/json");
+      if (!response.ok) {
+        throw new Error("An Error Occured While Fetching User's IP address.");
+      }
+      const data = await response.json();
+      return data["dns"]["ip"];
+    } catch (error) {}
   }
-  locationName=`${locationName.slice(0,locationName.length-2)}.`;
-  return locationName;
+  const IP = await getUserIp();
+  const response = await fetch(`http://ip-api.com/json/${IP}`);
+  const data = await response.json();
+  return data;
 }
