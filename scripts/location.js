@@ -70,7 +70,7 @@ export function constructLocationName(locationsArray, indexOfLocation) {
 export async function getIpLocation() {
   /* 
   * getUserIp gets the user IP address
-  * returns {string} - the user's IP address
+  * @returns {string} - the user's IP address
   */
   async function getUserIp() {
     try {
