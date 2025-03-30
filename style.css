@@ -89,7 +89,7 @@ main {
 .celesius::after {
   content: "°C";
   vertical-align: super;
-  font-size: xx-small;
+  font-size: 0.35em;
 }
 .container {
   border-radius: 2rem;
@@ -175,19 +175,34 @@ main {
   background: url(images/icons/humidity.svg) no-repeat center center/1.8rem
     1.8rem;
 }
+.humidity::after{
+  content: "%";
+}
 .wind-speed .icon {
   background: url(images/icons/wind.svg) no-repeat center center/1.6rem 1.6rem;
 }
+.wind-speed::after{
+  content: "\00A0km/h";/* a space */
+}
 .cloud-cover .icon {
   background: url(images/icons/clouds.svg) no-repeat center center/1.7rem 1.7rem;
+}
+.cloud-cover::after{
+  content: "%";
 }
 .rain .icon {
   background: url(images/icons/water-drop.svg) no-repeat center center/1.8rem
     1.8rem;
 }
+.rain::after{
+  content: "mm";
+}
 .snowfall .icon {
   background: url(images/icons/snowflake.svg) no-repeat center center/1.8rem
     1.8rem;
+}
+.snowfall::after{
+  content: "mm";
 }
 /* hourly weather */
 .hourly-weather {
