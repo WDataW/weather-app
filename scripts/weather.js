@@ -22,7 +22,7 @@ export async function getDefaultWeather() {
 export async function getWeather(location) {
   try {
     const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=weather_code,cloud_cover,rain,snowfall,temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=weather_code,temperature_2m_min,temperature_2m_max,sunset,sunrise,rain_sum,snowfall_sum&hourly=weather_code,temperature_2m,relative_humidity_2m,apparent_temperature,rain,snowfall,wind_direction_10m,wind_speed_10m&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=weather_code,cloud_cover,rain,snowfall,temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=weather_code,precipitation_probability_max,temperature_2m_min,temperature_2m_max,sunset,sunrise,rain_sum,snowfall_sum&hourly=weather_code,precipitation_probability,temperature_2m,relative_humidity_2m,apparent_temperature,rain,snowfall,wind_direction_10m,wind_speed_10m&timezone=auto`
     );
     if (!weatherResponse.ok) {
       throw new Error("An Error Occured While Fetching The Weather.");
@@ -40,6 +40,8 @@ export async function getWeather(location) {
  * @param {object} weather - contains contains weather data based on a specific location
  * @returns {void}
  */
+import {getDayName} from "./time.js";
+import {getTextDate} from "./time.js";
 function processWeather(weather) {
   /*
    * deleteProperties deleted properties from weather
@@ -99,6 +101,29 @@ function processWeather(weather) {
       }
     }
   }
+  /*
+   * addDayName adds an array of days to weather["daily"]. This array hold the names of days like ["Sunday","Monday",...]
+   * @returns {void}
+   *
+   */
+  function addDayName() {
+    weather["daily"]["day_name"] = [];
+    const daily = weather["daily"];
+    for (let i = 0; i < 7; i++) {
+      weather["daily"]["day_name"].push(getDayName(daily["time"][i]));
+    }
+  }
+  /*
+   * addTextDate adds an array of text-dates to weather["daily"]. This array holds text-dates like ["April 3","April 4",...]
+   * @returns {void}
+   */
+  function addTextDate() {
+    weather["daily"]["text_date"] = [];
+    const daily = weather["daily"];
+    for (let i = 0; i < 7; i++) {
+      weather["daily"]["text_date"].push(`${getTextDate(daily["time"][i])}`); // send the date like '2025-2-23' and get text-date in return
+    }
+  }
 
   const keysToDelete = [
     "hourly_units",
@@ -112,6 +137,10 @@ function processWeather(weather) {
   roundNumbers();
 
   formatTime();
+
+  addDayName();
+
+  addTextDate();
 }
 
 // used to translate from weather_code to words.
@@ -177,3 +206,42 @@ const weatherCodeInterpretation = {
 export function getWeatherDescription(weatherCode) {
   return weatherCodeInterpretation[weatherCode] || "Unknown Weather Condition.";
 }
+
+/*
+ * getCurrentStats gathers 6 stats in one array that will be used later to display those stats
+ * @param {object} weather - contains weather data based on a specific location
+ * @returns {object} stats - represents all the 5 stats in one array
+ */
+export function getCurrentStats(weather) {
+  const statsText = [
+    // the stats we are gathering
+    "precipitation_probability_max",
+    "relative_humidity_2m",
+    "wind_speed_10m",
+    "cloud_cover",
+    "rain",
+    "snowfall",
+  ];
+  const statsKeys = [
+    "Precipitation",
+    "Humidity",
+    "Wind-Speed",
+    "Cloud-Cover",
+    "Rain",
+    "Snowfall",
+  ];
+  const stats = {};
+  for (let i = 0; i < 6; i++) {
+    if (i === 0) {
+      stats[statsKeys[i]] = weather["daily"][statsText[i]][i];
+      continue;
+    }
+    stats[statsKeys[i]] = weather["current"][statsText[i]];
+  }
+  console.log(stats);
+  return stats;
+}
+
+/* these two will be needed later */
+export function getHourlyStats() {}
+export function getDailyStats() {}
