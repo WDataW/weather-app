@@ -1,8 +1,8 @@
-/* 
-* getDefaultWeather gets the weather for the IP location retrieved by getIpLocation 
-* @returns {object} defaultWeather - contains weather data based on the user's IP location.
-*/
-import { getIpLocation } from "./location.js";
+/*
+ * getDefaultWeather gets the weather for the IP location retrieved by getIpLocation
+ * @returns {object} defaultWeather - contains weather data based on the user's IP location.
+ */
+import {getIpLocation} from "./location.js";
 export async function getDefaultWeather() {
   try {
     const defaultLocation = await getIpLocation();
@@ -28,10 +28,90 @@ export async function getWeather(location) {
       throw new Error("An Error Occured While Fetching The Weather.");
     }
     const weatherData = await weatherResponse.json();
+    processWeather(weatherData);
     return weatherData;
   } catch (error) {
     console.error(error);
   }
+}
+
+/*
+ * processWeather prepares the weather object to be used in other functions. It deletes unecessary properties, rounds up numbers, reformats time
+ * @param {object} weather - contains contains weather data based on a specific location
+ * @returns {void}
+ */
+function processWeather(weather) {
+  /*
+   * deleteProperties deleted properties from weather
+   * @param {object} keys - array of the properties' keys that we want to delete
+   * @returns {void}
+   */
+  function deleteProperties(keys) {
+    // stage 1: delete unnecessary properties
+    for (const key of keys) {
+      delete weather[key];
+    }
+  }
+  /*
+   * roundNumbers rounds every number that exists in 'current', 'hourly', 'daily' in weather
+   * @returns {void}
+   */
+  function roundNumbers() {
+    // stage 2: round up every number in weather
+    for (let outerKey in weather) {
+      const outerElement = weather[outerKey];
+      if (outerKey === "current") {
+        // 'current' doesn't contain objects so we set the values directly no need for looping inside
+        for (const innerKey in outerElement) {
+          if (isNaN(Number(outerElement[innerKey]))) {
+            // make sure it is a number
+            continue;
+          }
+          outerElement[innerKey] = Math.round(outerElement[innerKey]); // round the number
+          continue;
+        }
+      }
+      if (outerKey === "daily" || outerKey === "hourly") {
+        for (const innerKey in outerElement) {
+          // they contain objects, so we need to loop through their properties
+          let innerElement = outerElement[innerKey]; // stores the array that we are going to loop through next
+          if (isNaN(innerElement[0])) {
+            // make sure it is a number. If the first element is a number then all elements are numhers
+            continue;
+          }
+          outerElement[innerKey] = innerElement.map((x) => Math.round(x)); // now round all the numbers inside 'innerElement'
+        }
+      }
+    }
+  }
+  /*
+   * formatTime format the time to include only the hour
+   * @returns {void}
+   */
+  function formatTime() {
+    // stage 3: give the time a user-friendly format
+    const time = weather["hourly"]["time"];
+    for (let i = 0; i < time.length; i++) {
+      time[i] = time[i].slice(time[i].indexOf("T") + 1); // only include the hour
+      if (time[i].startsWith("0")) {
+        // if it starts with '0' then remove the '0'
+        time[i] = time[i].slice(1);
+      }
+    }
+  }
+
+  const keysToDelete = [
+    "hourly_units",
+    "current_units",
+    "daily_units",
+    "elevation",
+    "generationtime_ms",
+  ];
+  deleteProperties(keysToDelete);
+
+  roundNumbers();
+
+  formatTime();
 }
 
 // used to translate from weather_code to words.
@@ -97,4 +177,3 @@ const weatherCodeInterpretation = {
 export function getWeatherDescription(weatherCode) {
   return weatherCodeInterpretation[weatherCode] || "Unknown Weather Condition.";
 }
-

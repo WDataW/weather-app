@@ -1,7 +1,7 @@
 /*
  *displayLocations displays locations returned by nominatim.openstreetmap api as options.
- *@param {array} locations - it is the array that contains the different locations returned by nominatim.openstreetmap api
- *@returns {array} - it contains all the buttons in locationContainer.
+ *@param {object} locations - the array that contains the different locations returned by nominatim.openstreetmap api
+ *@returns {object} - contains all the buttons in locationContainer.
  *it simply displays the elements as buttons for the user to choose from.
  */
 import {constructLocationName} from "./location.js";
@@ -104,7 +104,7 @@ function getAllElements() {
     daily: {
       temperature_2m_max: document.querySelectorAll(".max"),
       temperature_2m_min: document.querySelectorAll(".min"),
-    },
+    }, // the below lines are commented since their functionality is no longer needed. They may be deleted later
     /*  hourly: {
       temperature_2m: document.querySelectorAll(".temperature"),
       time: document.querySelectorAll(".time"),
@@ -113,14 +113,27 @@ function getAllElements() {
   return elements;
 }
 
+/*
+ * create24Hours generates 24 HTML elements representing the weather at each hour of a specified day. Each one contains many other HTML elements
+ * @param {object} weather - contains weather data based on a specific location
+ * @param {number} dayIndex - represents the day which the 24 hours belong to. 0 means today, 1 means tomorrow... max is 6
+ * @returns {void}
+ */
 export function create24Hours(weather, dayIndex) {
+  /*
+   * setHourlyContent sets the textContent of a specefic HTML element. The value is always an element of an array in weather["hourly"]
+   * @param {HTMLElement} target - refers the to HTML element that will have its textContent set
+   * @param {string} property - refers to the key of the property inside weather["hourly"]
+   * @param {number} index - represents the index of the element we are trying to access inside the array in weather["hourly"][property]
+   * @returns {void}
+   */
   function setHourlyContent(target, property, index) {
     setTextContent(target, weather["hourly"][property][index]);
   }
 
   const hoursContainer = document.querySelector(".hours");
 
-  const propertiesOffset = dayIndex * 24;
+  const propertiesOffset = dayIndex * 24; // each array in weather["hourly"] has 168 elements. 0-23 = today, 24-47 = tomorrow... this offset helps specify which day we are tageting
   for (let i = 0; i < 24; i++) {
     const hour = document.createElement("div");
     hour.classList.add("hour", "extendable");
@@ -134,7 +147,7 @@ export function create24Hours(weather, dayIndex) {
     icon.classList.add("mini-icon");
 
     const weatherImg = document.createElement("img");
-    weatherImg.src = "images/weather-icons/day/clear.svg";
+    weatherImg.src = "images/weather-icons/day/clear.svg"; // temporary until it becomes dynamic later
     icon.appendChild(weatherImg);
     hour.appendChild(icon);
 
