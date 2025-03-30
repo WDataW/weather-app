@@ -89,7 +89,8 @@ function getAllElements() {
     current: {
       temperature_2m: document.querySelector(".current"),
       apparent_temperature: document.querySelector(".apparent"),
-      relative_humidity_2m: document
+    },
+    /*  relative_humidity_2m: document
         .querySelector(".humidity")
         .querySelector(".value"),
       wind_speed_10m: document
@@ -100,7 +101,7 @@ function getAllElements() {
         .querySelector(".value"),
       rain: document.querySelector(".rain").querySelector(".value"),
       snowfall: document.querySelector(".snowfall").querySelector(".value"),
-    },
+    }, */
     daily: {
       temperature_2m_max: document.querySelectorAll(".max"),
       temperature_2m_min: document.querySelectorAll(".min"),
@@ -114,12 +115,12 @@ function getAllElements() {
 }
 
 /*
- * create24Hours generates 24 HTML elements representing the weather at each hour of a specified day. Each one contains many other HTML elements
+ * createHourlyWeather generates 24 HTML elements representing the weather at each hour of a specified day. Each one contains many other HTML elements
  * @param {object} weather - contains weather data based on a specific location
  * @param {number} dayIndex - represents the day which the 24 hours belong to. 0 means today, 1 means tomorrow... max is 6
  * @returns {void}
  */
-export function create24Hours(weather, dayIndex) {
+export function createHourlyWeather(weather, dayIndex) {
   /*
    * setHourlyContent sets the textContent of a specefic HTML element. The value is always an element of an array in weather["hourly"]
    * @param {HTMLElement} target - refers the to HTML element that will have its textContent set
@@ -131,18 +132,37 @@ export function create24Hours(weather, dayIndex) {
     setTextContent(target, weather["hourly"][property][index]);
   }
 
-  const hoursContainer = document.querySelector(".hours");
+  const hourlyContainer = document.querySelector(".hourly-weather"); // main container
+  // header creation
+  const header = document.createElement("div");
+  header.classList.add("header");
 
+  const day = document.createElement("span");
+  setTextContent(day, weather["daily"]["day_name"][dayIndex]); // like 'Sunday'...
+  header.appendChild(day);
+
+  const date = document.createElement("span");
+  date.classList.add("date");
+  setTextContent(date, weather["daily"]["text_date"][dayIndex]); // like 'March 22'
+  header.appendChild(date);
+
+  hourlyContainer.appendChild(header);
+
+  // hours creation
+  const hoursContainer = document.createElement("div"); // to contain every 'hour'
+  hoursContainer.classList.add("hours");
   const propertiesOffset = dayIndex * 24; // each array in weather["hourly"] has 168 elements. 0-23 = today, 24-47 = tomorrow... this offset helps specify which day we are tageting
   for (let i = 0; i < 24; i++) {
     const hour = document.createElement("div");
     hour.classList.add("hour", "extendable");
 
+    // temperature
     const temperature = document.createElement("p");
     temperature.classList.add("temperature", "celesius");
     setHourlyContent(temperature, "temperature_2m", i + propertiesOffset);
     hour.appendChild(temperature);
 
+    // icon
     const icon = document.createElement("div");
     icon.classList.add("mini-icon");
 
@@ -151,14 +171,45 @@ export function create24Hours(weather, dayIndex) {
     icon.appendChild(weatherImg);
     hour.appendChild(icon);
 
+    // exact hour
     const time = document.createElement("p");
     time.classList.add("time");
     setHourlyContent(time, "time", i + propertiesOffset);
     hour.appendChild(time);
 
+    // arrow icon, will be used later to display more info when clicked
     const arrowIcon = document.createElement("div");
     hour.appendChild(arrowIcon);
 
+    // append hour to the hours container
     hoursContainer.appendChild(hour);
+  }
+  // append hours container to the main container
+  hourlyContainer.appendChild(hoursContainer);
+}
+
+/*
+ * createWeatherStats creates HTML elements that represent weather stats like humidity...
+ * @param {object} stats - Each property represent a stat to be displayed
+ * @returns {void}
+ */
+export function createWeatherStats(stats) {
+  const statsContainer = document.querySelector(".stats"); // could be changed later to specify another container
+
+  for (const key in stats) {
+    const statHTML = document.createElement("div"); // create the container
+    statHTML.classList.add(key.toLowerCase()); // key = css class. helps display the correct icon to match the stat
+    statHTML.setAttribute("title", key);
+
+    const icon = document.createElement("span");
+    icon.classList.add("icon");
+    statHTML.appendChild(icon);
+
+    const value = document.createElement("span");
+    value.classList.add("value");
+    setTextContent(value, stats[key]); // displaying the value of the stat
+    statHTML.appendChild(value);
+
+    statsContainer.appendChild(statHTML);
   }
 }
