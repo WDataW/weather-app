@@ -175,10 +175,12 @@ main {
 .weather-condition {
   font-size: 1.7rem;
   font-weight: bold;
+  text-align: center;
 }
 
 /* local-time */
 .local-time {
+  margin-right: 1rem;
   height: 3rem;
   display: flex;
   align-items: center;
@@ -192,6 +194,7 @@ main {
 .local-time .value {
   font-size: 1.7rem;
   font-weight: bold;
+  text-align: center;
 }
 /* stats */
 .stats {
