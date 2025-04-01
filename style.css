@@ -42,12 +42,12 @@ header {
   margin-right: 0.5rem;
   background: url(images/icons/location.svg) no-repeat 0 0/100% 100%;
 }
-@media screen and (max-width: 410px) {
-  .location-icon {
-    margin-top: 3px;
-    align-self: flex-start;
-  }
+
+.location-icon {
+  margin-top: 3px;
+  align-self: flex-start;
 }
+
 .location {
   display: inline-block;
   color: white;
@@ -159,6 +159,40 @@ main {
   display: inline-block;
   width: 100%;
 }
+
+/* time-stats container */
+.time-stats {
+  padding-top: 1rem;
+}
+/* local-time and weather-description container */
+.time-stats > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.8rem;
+}
+/* weather-condition */
+.weather-condition {
+  font-size: 1.7rem;
+  font-weight: bold;
+}
+
+/* local-time */
+.local-time {
+  height: 3rem;
+  display: flex;
+  align-items: center;
+}
+.local-time .icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-right: 0.5rem;
+  background: url(images/icons/clock.svg) no-repeat center center/100% 100%;
+}
+.local-time .value {
+  font-size: 1.7rem;
+  font-weight: bold;
+}
 /* stats */
 .stats {
   display: flex;
@@ -186,6 +220,9 @@ main {
 .precipitation .icon {
   background: url(images/icons/precipitation.svg) no-repeat center center/2.2rem
     2.2rem;
+}
+.precipitation::after {
+  content: "%";
 }
 .humidity .icon {
   background: url(images/icons/humidity.svg) no-repeat center center/1.8rem
