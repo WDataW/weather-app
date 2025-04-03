@@ -129,8 +129,7 @@ function passMinute(time) {
 
   if (intervalFlag) {
     setInterval(
-      () =>
-        passMinute(document.querySelector(".local-time .value").textContent), // uses the current local-time and adds a minute to it after 59000 milliseconds
+      () => passMinute(getDisplayedWeather()), // uses the current local-time and adds a minute to it after 59000 milliseconds
       secondsTillNextMinute * 1000
     );
     intervalFlag = false; // to only setInterval once
@@ -141,4 +140,20 @@ function stopTrackingTime() {
   // will be used later for some purposes, until then it will be of no use
   clearInterval(passMinuteInterval);
   intervalFlag = true;
+}
+
+import {select} from "./ui.js";
+function getDisplayedWeather() {
+  return select(".local-time .value").textContent;
+}
+export function convert12To24() {
+  const time = getDisplayedWeather();
+  let hour = Number(time.slice(0, time.indexOf(":")));
+  let AMPM = time.slice(time.indexOf(" ") + 1);
+  if (hour == 12) {
+    hour = AMPM == "AM" ? 0 : 12;
+  } else {
+    hour = AMPM == "AM" ? hour : hour + 12;
+  }
+  return hour;
 }
