@@ -6,14 +6,14 @@
  */
 import {constructLocationName} from "./location.js";
 export function displayLocations(locationsArray) {
-  const locationsContainer = document.createElement("div");
+  const locationsContainer = createElement("div");
   if (locationsArray.length === 0) {
     // if no locations found then there is no results.
     locationsContainer.appendChild(createParagraph("No Results Found."));
   }
   for (let i = 0; i < locationsArray.length; i++) {
     // loop through locations and display them.
-    const button = document.createElement("button");
+    const button = createElement("button");
     button.textContent = constructLocationName(locationsArray, i);
     button.setAttribute("id", i);
     locationsContainer.appendChild(button);
@@ -28,7 +28,7 @@ export function displayLocations(locationsArray) {
  * @returns {HTMLElement} paragraph - it is the <p> element holding the text.
  */
 function createParagraph(text) {
-  const paragraph = document.createElement("p");
+  const paragraph = createElement("p");
   paragraph.textContent = text;
   return paragraph;
 }
@@ -134,51 +134,53 @@ export function createHourlyWeather(weather, dayIndex) {
 
   const hourlyContainer = document.querySelector(".hourly-weather"); // main container
   // header creation
-  const header = document.createElement("div");
-  header.classList.add("header");
+  const header = createElement("div");
+  addClass(header, "header");
 
-  const day = document.createElement("span");
+  const day = createElement("span");
   setTextContent(day, weather["daily"]["day_name"][dayIndex]); // like 'Sunday'...
   header.appendChild(day);
 
-  const date = document.createElement("span");
-  date.classList.add("date");
+  const date = createElement("span");
+  addClass(date, "date");
   setTextContent(date, weather["daily"]["text_date"][dayIndex]); // like 'March 22'
   header.appendChild(date);
 
   hourlyContainer.appendChild(header);
 
   // hours creation
-  const hoursContainer = document.createElement("div"); // to contain every 'hour'
-  hoursContainer.classList.add("hours");
+  const hoursContainer = createElement("div"); // to contain every 'hour'
+  addClass(hoursContainer, "hours");
   const propertiesOffset = dayIndex * 24; // each array in weather["hourly"] has 168 elements. 0-23 = today, 24-47 = tomorrow... this offset helps specify which day we are tageting
   for (let i = 0; i < 24; i++) {
-    const hour = document.createElement("div");
-    hour.classList.add("hour", "extendable");
+    const hour = createElement("div");
+    addClass(hour, "hour");
+    addClass(hour, "extendable");
 
     // temperature
-    const temperature = document.createElement("p");
-    temperature.classList.add("temperature", "celesius");
+    const temperature = createElement("p");
+    addClass(temperature, "temperature");
+    addClass(temperature, "celesius");
     setHourlyContent(temperature, "temperature_2m", i + propertiesOffset);
     hour.appendChild(temperature);
 
     // icon
-    const icon = document.createElement("div");
-    icon.classList.add("mini-icon");
+    const icon = createElement("div");
+    addClass(icon, "mini-icon");
 
-    const weatherImg = document.createElement("img");
+    const weatherImg = createElement("img");
     weatherImg.src = "images/weather-icons/day/clear.svg"; // temporary until it becomes dynamic later
     icon.appendChild(weatherImg);
     hour.appendChild(icon);
 
     // exact hour
-    const time = document.createElement("p");
-    time.classList.add("time");
+    const time = createElement("p");
+    addClass(time, "time");
     setHourlyContent(time, "time", i + propertiesOffset);
     hour.appendChild(time);
 
     // arrow icon, will be used later to display more info when clicked
-    const arrowIcon = document.createElement("div");
+    const arrowIcon = createElement("div");
     hour.appendChild(arrowIcon);
 
     // append hour to the hours container
@@ -197,19 +199,73 @@ export function createWeatherStats(stats) {
   const statsContainer = document.querySelector(".stats"); // could be changed later to specify another container
 
   for (const key in stats) {
-    const statHTML = document.createElement("div"); // create the container
-    statHTML.classList.add(key.toLowerCase()); // key = css class. helps display the correct icon to match the stat
+    const statHTML = createElement("div"); // create the container
+    addClass(statHTML, key.toLowerCase()); // key = css class. helps display the correct icon to match the stat
     statHTML.setAttribute("title", key);
 
-    const icon = document.createElement("span");
-    icon.classList.add("icon");
+    const icon = createElement("span"); // the icon of the stat
+    addClass(icon, "icon");
     statHTML.appendChild(icon);
 
-    const value = document.createElement("span");
-    value.classList.add("value");
+    const value = createElement("span");
+    addClass(value, "value");
     setTextContent(value, stats[key]); // displaying the value of the stat
     statHTML.appendChild(value);
 
     statsContainer.appendChild(statHTML);
   }
+}
+/*
+ * createElement creates a new HTML element of a specific type
+ * @param {string} type - refers to the type of the HTML element
+ * @returns {HTMLElement} - the HTMLElement of the specified type
+ */
+function createElement(type) {
+  return document.createElement(type);
+}
+
+/*
+ * addClass adds a class to an HTMLElement
+ * @param {HTMLElement} target - is the HTMLElement we are adding the class to
+ * @param {string} Class - represents the name of the class we are adding to 'target'
+ */
+function addClass(target, Class) {
+  target.classList.add(Class);
+}
+
+/*
+ * createLocalTime creates the HTML structure to display local-time
+ * @param {object} weather - contains weather data based on a specific location
+ * @returns {void}
+ */
+import {trackTime} from "./time.js";
+import {getLocalTime} from "./time.js";
+export function createLocalTime(weather) {
+  const targetContainer = document.querySelector(
+    ".time-stats > div:first-child"
+  ); // the container of local-time
+  const container = createElement("div"); // the container of the icon and the value of local-time
+  addClass(container, "local-time");
+
+  const icon = createElement("span"); // the icon of time (a clock)
+  addClass(icon, "icon");
+  container.appendChild(icon);
+
+  const value = createElement("span"); // the value of time, like '4:34 PM'
+  addClass(value, "value");
+  setTextContent(value, getLocalTime(weather));
+  trackTime(value.textContent); // to start updating the time every minute
+  container.appendChild(value);
+
+  targetContainer.appendChild(container);
+}
+
+/*
+ * updateLocalTime updates the textContent of .local-time .value
+ * @param {string} time - represents time to be displayed, formatted 'hour:minute(padded with 0) AMPM'
+ * @returns {void}
+ */
+export function updateLocalTime(time) {
+  const localTime = document.querySelector(".local-time .value");
+  setTextContent(localTime, time);
 }
