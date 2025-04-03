@@ -34,42 +34,6 @@ function createParagraph(text) {
 }
 
 /*
- * displayWeather sets the textContent of all the HTML elements displaying weather info
- * @param {object} weather - contains contains weather data based on a specific location
- * @returns {void}
- */
-const pageElements = getAllElements();
-export function displayWeather(weather) {
-  for (const outerKey in pageElements) {
-    // refers to locationName, current, daily, hourly
-    const pageOuterElement = pageElements[outerKey]; // refers to the current outer-element of pageElements
-    const weatherOuterElement = weather[outerKey]; // refers to the current outer-element of weather
-    if (typeof weatherOuterElement !== "object") {
-      // if weather's outer-element is not an object then set the value directly no need for loops
-      setTextContent(pageOuterElement, weatherOuterElement);
-      continue;
-    }
-    for (const innerKey in pageOuterElement) {
-      // if the weather's outer-element is an object; loop through the page's outer-element's inner-elements
-      const pageInnerElement = pageOuterElement[innerKey]; // refers to the current inner-element of the current outer-element of pageElements
-      const weatherInnerElement = weatherOuterElement[innerKey]; // refers to the current inner-element of the current outer-element of weather
-      if (typeof weatherInnerElement === "object") {
-        // if the weather current inner-element is also an object loop through its elements
-        for (let i = 0; i < pageInnerElement.length; i++) {
-          if (outerKey === "daily") {
-            setTextContent(pageInnerElement[i], weatherInnerElement[i + 1]); // sets the page inner-element's elements to their corresponding values in weather's inner-element's elements
-            continue;
-          }
-          setTextContent(pageInnerElement[i], weatherInnerElement[i]); // sets the page inner-element's elements to their corresponding values in weather's inner-element's elements
-        }
-        continue;
-      }
-      setTextContent(pageInnerElement, weatherInnerElement); // if weather's inner-element is not an object then set the value directly no need for loops
-    }
-  }
-}
-
-/*
  * setTextContent sets the textContent of an HTML element
  * @param {HTMLElement} target - refers the to HTML element that will have its textContent set
  * @param {any} value - refers to the value that will be assigned to target's textContent.
@@ -77,41 +41,6 @@ export function displayWeather(weather) {
  */
 function setTextContent(target, value) {
   target.textContent = value;
-}
-
-/*
- * getAllElements gets all the HTML elements that display any weather info, and structures them in an object to be accessed easily later and have their textContent values updated
- * @returns {object} elements - it contains references to the HTML elements
- */
-function getAllElements() {
-  const elements = {
-    locationName: document.querySelector(".location"),
-    current: {
-      temperature_2m: document.querySelector(".current"),
-      apparent_temperature: document.querySelector(".apparent"),
-    },
-    /*  relative_humidity_2m: document
-        .querySelector(".humidity")
-        .querySelector(".value"),
-      wind_speed_10m: document
-        .querySelector(".wind-speed")
-        .querySelector(".value"),
-      cloud_cover: document
-        .querySelector(".cloud-cover")
-        .querySelector(".value"),
-      rain: document.querySelector(".rain").querySelector(".value"),
-      snowfall: document.querySelector(".snowfall").querySelector(".value"),
-    }, */
-    daily: {
-      temperature_2m_max: document.querySelectorAll(".max"),
-      temperature_2m_min: document.querySelectorAll(".min"),
-    }, // the below lines are commented since their functionality is no longer needed. They may be deleted later
-    /*  hourly: {
-      temperature_2m: document.querySelectorAll(".temperature"),
-      time: document.querySelectorAll(".time"),
-    }, */
-  };
-  return elements;
 }
 
 /*
@@ -132,7 +61,7 @@ export function createHourlyWeather(weather, dayIndex) {
     setTextContent(target, weather["hourly"][property][index]);
   }
 
-  const hourlyContainer = document.querySelector(".hourly-weather"); // main container
+  const hourlyContainer = select(".hourly-weather"); // main container
   // header creation
   const header = createElement("div");
   addClass(header, "header");
@@ -196,7 +125,7 @@ export function createHourlyWeather(weather, dayIndex) {
  * @returns {void}
  */
 export function createWeatherStats(stats) {
-  const statsContainer = document.querySelector(".stats"); // could be changed later to specify another container
+  const statsContainer = select(".stats"); // could be changed later to specify another container
 
   for (const key in stats) {
     const statHTML = createElement("div"); // create the container
@@ -241,9 +170,7 @@ function addClass(target, Class) {
 import {trackTime} from "./time.js";
 import {getLocalTime} from "./time.js";
 export function createLocalTime(weather) {
-  const targetContainer = document.querySelector(
-    ".time-stats > div:first-child"
-  ); // the container of local-time
+  const targetContainer = select(".time-stats > div:first-child"); // the container of local-time
   const container = createElement("div"); // the container of the icon and the value of local-time
   addClass(container, "local-time");
 
@@ -266,6 +193,72 @@ export function createLocalTime(weather) {
  * @returns {void}
  */
 export function updateLocalTime(time) {
-  const localTime = document.querySelector(".local-time .value");
+  const localTime = select(".local-time .value");
   setTextContent(localTime, time);
+}
+
+/*
+ * generatePage invokes all the main functions to construct the weather page
+ * @param {object} weather - contains weather data based on a specific location
+ * @returns {void}
+ */
+import {getCurrentStats} from "./weather.js";
+export function generatePage(weather) {
+  setLocation(weather);
+  setMainInfo(weather); // big weather icon and current temperatures
+  createLocalTime(weather); // shows local-time for a location
+  createWeatherStats(getCurrentStats(weather)); // weather stats like humidity...
+  createHourlyWeather(weather, 0); //hour by hour weather
+}
+
+/*
+ * setWeatherIcon sets the icon for a target based on weatherCode and isDay
+ * @param {HTMLElement} target - represents the img element that will display the icon
+ * @param {number} weatherCode - a number used for describing the weather condition
+ * @param {boolean} isDay - true = day / false = night
+ * @returns {void}
+ */
+import {interpretWeatherCode} from "./weather.js";
+function setWeatherIcon(target, weatherCode, isDay) {
+  const interpreation = interpretWeatherCode(weatherCode, isDay);
+  target.src = interpreation[1]; // assigning a url of the icon representing the weather condition
+}
+
+/*
+ * setMainInfo sets the main-info section in index.html, including weather-icon,  temperatures
+ * @param {object} weather - contains weather data based on a specific location
+ * @returns {void}
+ */
+function setMainInfo(weather) {
+  const currentWeather = weather["current"];
+
+  const temperature = select(".current"); // represents the current temperature
+  setTextContent(temperature, currentWeather["temperature_2m"]);
+
+  const apparent_temperature = select(".apparent"); // represents the current apparent temperature
+  setTextContent(apparent_temperature, currentWeather["apparent_temperature"]);
+
+  const weatherIcon = select(".weather-icon img"); // an icon representing the weather condition
+  const weatherCode = currentWeather["weather_code"];
+  const isDay = currentWeather["isday"]; // a boolean indicating day or night
+  setWeatherIcon(weatherIcon, weatherCode, isDay);
+}
+
+/*
+ * select selects an HTMLElement based on a query (used to make the code cleaner)
+ * @param {string} query - represents a way to identify the HTMLElement like name of class '.temperature'
+ * @returns {HTMLElement} - the HTMLElement matching the query
+ */
+export function select(query) {
+  return document.querySelector(query);
+}
+
+/*
+ * setLocation sets the textContent of .location
+ * @param {object} weather - contains weather data based on a specific location
+ * @returns {void}
+ */
+function setLocation(weather) {
+  const location = select(".location");
+  setTextContent(location, weather["locationName"]);
 }

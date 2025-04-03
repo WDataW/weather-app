@@ -246,3 +246,29 @@ export function getCurrentStats(weather) {
 /* these two will be needed later */
 export function getHourlyStats() {}
 export function getDailyStats() {}
+/*
+ * interpretWeatherCode takes weatherCode and returns the text description with an icon url
+ * @param {number} weatherCode - a number used for describing the weather condition
+ * @param {boolean} isDay - true = day / false = night
+ * @returns {object} interpretation - an array holding the text description and icon for every weatherCode
+ */
+export function interpretWeatherCode(weatherCode, isDay) {
+  if (typeof weatherCode !== "object") {
+    const interpreation = weatherCodeInterpretation[weatherCode];
+    let weatherIcon = interpreation[1]; // the url of the weather icon
+    if (
+      // to get the directories right
+      weatherIcon.includes("heavy-rain") ||
+      weatherIcon.includes("snow") ||
+      weatherIcon.includes("thunderstorm")
+    ) {
+      weatherIcon = `images/weather-icons/${weatherIcon}`; // the previous three exist in this directory
+      interpreation[1] = weatherIcon;
+    } else {
+      const dayNight = isDay ? "day" : "night";
+      weatherIcon = `images/weather-icons/${dayNight}/${weatherIcon}`; // others exist in different directories based on day or night
+      interpreation[1] = weatherIcon;
+    }
+    return interpreation;
+  }
+}
