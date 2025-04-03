@@ -146,56 +146,56 @@ function processWeather(weather) {
 // used to translate from weather_code to words.
 const weatherCodeInterpretation = {
   // Clouds
-  0: "Clear Sky",
-  1: "Mainly clear",
-  2: "Partly Cloudy,",
-  3: "Cloudy",
+  0: ["Clear Sky", "clear.svg"],
+  1: ["Mainly clear", "clear.svg"],
+  2: ["Partly Cloudy", "partly-cloudy.svg"],
+  3: ["Cloudy", "cloudy.svg"],
 
   // Fog
-  45: "Fog",
-  48: "Freezing Fog",
+  45: ["Fog", "cloudy.svg"],
+  48: ["Freezing Fog", "cloudy.svg"],
 
   // Drizzle
-  51: "Light Drizzle",
-  53: "Moderate Drizzle",
-  55: "Heavy Drizzle",
+  51: ["Light Drizzle", "light-rain.svg"],
+  53: ["Moderate Drizzle", "light-rain.svg"],
+  55: ["Heavy Drizzle", "light-rain.svg"],
 
   // Freezing drizzle
-  56: "Light Freezing Drizzle",
-  57: "Heavy Freezing Drizzle",
+  56: ["Light Freezing Drizzle", "light-rain.svg"],
+  57: ["Heavy Freezing Drizzle", "light-rain.svg"],
 
   // Rain
-  61: "SLight Rain",
-  63: "Moderate Rain",
-  65: "Heavy Rain",
+  61: ["SLight Rain", "light-rain.svg"],
+  63: ["Moderate Rain", "light-rain.svg"],
+  65: ["Heavy Rain", "heavy-rain.svg"],
 
   // Freezing rain
-  66: "Light Freezing Rain",
-  67: "Heavy Freezing Rain",
+  66: ["Light Freezing Rain", "light-rain.svg"],
+  67: ["Heavy Freezing Rain", "heavy-rain.svg"],
 
   // Snowfall
-  71: "Slight Snowfall",
-  73: "Moderate Snowfall",
-  75: "Heavy Snowfall",
+  71: ["Slight Snowfall", "snow.svg"],
+  73: ["Moderate Snowfall", "snow.svg"],
+  75: ["Heavy Snowfall", "snow.svg"],
 
   // Snow grains
-  77: "Snow grains",
+  77: ["Snow grains", "snow.svg"],
 
   // Rain showers
-  80: "Slight Rain Showers",
-  81: "Moderate Rain Showers",
-  82: "Heavy Rain Showers",
+  80: ["Slight Rain Showers", "heavy-rain.svg"],
+  81: ["Moderate Rain Showers", "heavy-rain.svg"],
+  82: ["Heavy Rain Showers", "heavy-rain.svg"],
 
   // Snow showers
-  85: "Slight Snow Showers",
-  86: "Heavy Snow Showers",
+  85: ["Slight Snow Showers", "snow.svg"],
+  86: ["Heavy Snow Showers", "snow.svg"],
 
   // Thunderstorm
-  95: "Thunder Storms",
+  95: ["Thunder Storms", "thunderstorm.svg"],
 
   // Thunderstorm with hail. NOTE: available in Central Europe only.
-  96: "Thunderstorm With Slight Hail",
-  99: "Thunderstorm With Heavy Hail",
+  96: ["Thunderstorm With Slight Hail", "thunderstorm.svg"],
+  99: ["Thunderstorm With Heavy Hail", "thunderstorm.svg"],
 };
 
 /*
@@ -212,10 +212,11 @@ export function getWeatherDescription(weatherCode) {
  * @param {object} weather - contains weather data based on a specific location
  * @returns {object} stats - represents all the 5 stats in one array
  */
+import {convert12To24} from "./time.js";
 export function getCurrentStats(weather) {
   const statsText = [
     // the stats we are gathering
-    "precipitation_probability_max",
+    "precipitation_probability",
     "relative_humidity_2m",
     "wind_speed_10m",
     "cloud_cover",
@@ -230,15 +231,15 @@ export function getCurrentStats(weather) {
     "Rain",
     "Snowfall",
   ];
+  const hour = convert12To24();
   const stats = {};
   for (let i = 0; i < 6; i++) {
     if (i === 0) {
-      stats[statsKeys[i]] = weather["daily"][statsText[i]][i];
+      stats[statsKeys[i]] = weather["hourly"][statsText[i]][hour];
       continue;
     }
     stats[statsKeys[i]] = weather["current"][statsText[i]];
   }
-  console.log(stats);
   return stats;
 }
 
