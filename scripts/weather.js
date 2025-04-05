@@ -92,12 +92,12 @@ function processWeather(weather) {
    */
   function formatTime() {
     // stage 3: give the time a user-friendly format
-    const time = weather["hourly"]["time"];
-    for (let i = 0; i < time.length; i++) {
-      time[i] = time[i].slice(time[i].indexOf("T") + 1); // only include the hour
-      if (time[i].startsWith("0")) {
+    const hourlyTime = weather["hourly"]["time"];
+    for (let i = 0; i < hourlyTime.length; i++) {
+      hourlyTime[i] = hourlyTime[i].slice(hourlyTime[i].indexOf("T") + 1); // only include the hour
+      if (hourlyTime[i].startsWith("0")) {
         // if it starts with '0' then remove the '0'
-        time[i] = time[i].slice(1);
+        hourlyTime[i] = hourlyTime[i].slice(1);
       }
     }
   }
@@ -141,6 +141,7 @@ function processWeather(weather) {
   addDayName();
 
   addTextDate();
+  console.log(weather);
 }
 
 // used to translate from weather_code to words.
@@ -152,17 +153,17 @@ const weatherCodeInterpretation = {
   3: ["Cloudy", "cloudy.svg"],
 
   // Fog
-  45: ["Fog", "cloudy.svg"],
-  48: ["Freezing Fog", "cloudy.svg"],
+  45: ["Foggy", "fog.svg"],
+  48: ["Freezing Fog", "fog.svg"],
 
   // Drizzle
-  51: ["Light Drizzle", "light-rain.svg"],
-  53: ["Moderate Drizzle", "light-rain.svg"],
-  55: ["Heavy Drizzle", "light-rain.svg"],
+  51: ["Light Drizzle", "drizzle.svg"],
+  53: ["Moderate Drizzle", "drizzle.svg"],
+  55: ["Heavy Drizzle", "drizzle.svg"],
 
   // Freezing drizzle
-  56: ["Light Freezing Drizzle", "light-rain.svg"],
-  57: ["Heavy Freezing Drizzle", "light-rain.svg"],
+  56: ["Light Freezing Drizzle", "drizzle.svg"],
+  57: ["Heavy Freezing Drizzle", "drizzle.svg"],
 
   // Rain
   61: ["SLight Rain", "light-rain.svg"],
@@ -210,12 +211,14 @@ export function getWeatherDescription(weatherCode) {
 /*
  * getCurrentStats gathers 6 stats in one array that will be used later to display those stats
  * @param {object} weather - contains weather data based on a specific location
- * @returns {object} stats - represents all the 5 stats in one array
+ * @returns {object} stats - represents all the 7 stats in one array
  */
 import {convert12To24} from "./time.js";
 export function getCurrentStats(weather) {
   const statsText = [
     // the stats we are gathering
+    "sunrise",
+    "sunset",
     "precipitation_probability",
     "relative_humidity_2m",
     "wind_speed_10m",
@@ -224,6 +227,8 @@ export function getCurrentStats(weather) {
     "snowfall",
   ];
   const statsKeys = [
+    "Sunrise",
+    "Sunset",
     "Precipitation",
     "Humidity",
     "Wind-Speed",
@@ -233,8 +238,17 @@ export function getCurrentStats(weather) {
   ];
   const hour = convert12To24();
   const stats = {};
-  for (let i = 0; i < 6; i++) {
-    if (i === 0) {
+  for (let i = 0; i < 8; i++) {// 8 stats
+    if (i === 0 || i === 1) {// first two are times of sunset/sunrise
+      let time = weather["daily"][statsText[i]][0];
+      time = time.slice(time.indexOf("T") + 1);// only cut the time. ignore the date
+      if (time.startsWith("0")) {// to convert time from '0H:mm' to "H:mm" 
+        time = time.slice(1);
+      }
+      stats[statsKeys[i]] = time.slice(time.indexOf("T") + 1);// if it doesn't start with '0'
+      continue;
+    }
+    if (i === 2) {// get the precipation for the hour matching the current hour in local-time
       stats[statsKeys[i]] = weather["hourly"][statsText[i]][hour];
       continue;
     }
@@ -246,29 +260,63 @@ export function getCurrentStats(weather) {
 /* these two will be needed later */
 export function getHourlyStats() {}
 export function getDailyStats() {}
+
 /*
  * interpretWeatherCode takes weatherCode and returns the text description with an icon url
  * @param {number} weatherCode - a number used for describing the weather condition
  * @param {boolean} isDay - true = day / false = night
  * @returns {object} interpretation - an array holding the text description and icon for every weatherCode
  */
-export function interpretWeatherCode(weatherCode, isDay) {
+export function interpretWeatherCode(weatherCode, isDay = 1) {
   if (typeof weatherCode !== "object") {
-    const interpreation = weatherCodeInterpretation[weatherCode];
+    const interpreation = weatherCodeInterpretation[weatherCode].slice();
     let weatherIcon = interpreation[1]; // the url of the weather icon
     if (
       // to get the directories right
       weatherIcon.includes("heavy-rain") ||
       weatherIcon.includes("snow") ||
-      weatherIcon.includes("thunderstorm")
+      weatherIcon.includes("thunderstorm") ||
+      weatherIcon.includes("fog") ||
+      weatherIcon.includes("drizzle")
     ) {
       weatherIcon = `images/weather-icons/${weatherIcon}`; // the previous three exist in this directory
       interpreation[1] = weatherIcon;
     } else {
-      const dayNight = isDay ? "day" : "night";
+      const dayNight = isDay == 1 ? "day" : "night";
       weatherIcon = `images/weather-icons/${dayNight}/${weatherIcon}`; // others exist in different directories based on day or night
       interpreation[1] = weatherIcon;
     }
     return interpreation;
   }
+}
+
+/*
+ * getIsDay take the day, hour of that day, and returns 1 if the hour is within day-time else returns 0
+ * @param {number} hour - represents the hour of a specific day 
+ * @param {object} weather - contains weather data based on a specific location
+ * @param {number} dayIndex - represents a day (0 means today, 1 tomorrow...) max-value = 6
+ * @returns {number} - 0 stands for night, 1 stands for day
+ */
+export function getIsDay(hour, weather, dayIndex) {
+  let sunset = weather["daily"]["sunset"][dayIndex];// sunsent time
+ 
+  let minutes = Number(sunset.indexOf(":"));// if minutes!==0 then Add 1 to sunset(weather is displayed hour by hour, so if sunset is at 6:15 the 'night' status should show at 7:00 not 6:00)
+  sunset = Number(sunset.slice(sunset.indexOf("T") + 1, sunset.indexOf(":")));
+  if (minutes !== 0) {
+    sunset++;
+  }
+
+
+  let sunrise = weather["daily"]["sunrise"][dayIndex];// sunrise time
+
+  minutes = Number(sunrise.indexOf(":"));// if minutes!==0 then Add 1 to sunrise(weather is displayed hour by hour, so if sunrise is at 6:15 the 'day' status should show at 7:00 not 6:00)
+  sunrise = Number(
+    sunrise.slice(sunrise.indexOf("T") + 1, sunrise.indexOf(":")));
+  if (minutes !== 0) {
+    sunrise++;
+  }
+  if (hour < sunset && hour >= sunrise) {// if the hour is higher or equal to sunrise and lower than sunset then the hour is at day-time(sunrise...'day'...sunset...'night'...sunrise)
+    return 1; // means day
+  }
+  return 0; // means night
 }
