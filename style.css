@@ -118,15 +118,16 @@ main {
 .weather-icon {
   position: relative;
   width: 100%;
+
   aspect-ratio: 1/0.33;
   margin-bottom: 1rem;
 }
 .weather-icon img {
   position: absolute;
-  width: 70%;
+  width: 65%;
   top: 50%;
   left: 50%;
-  transform: translate(-48%, -55%);
+  transform: translate(-53%, -50%);
 }
 
 /* temperatures */
@@ -145,18 +146,24 @@ main {
   display: block;
   font: 6rem /1.3 sans-serif;
 }
-.current::before {
+/* .current::before {
   content: "\00A0";
+  font-size: 6rem;
 }
+ */
 .temperatures .current::after {
   content: "°";
+  font-size: 4rem;
+  vertical-align: top;
 }
 .temperatures .apparent {
   display: inline-block;
   width: 100%;
+  font-size: 1.7rem;
 }
 .temperatures .apparent::before {
-  content: "\00A0 Feels Like\00A0";
+  content: "Feels Like\00A0";
+  font-size: 1.7rem;
 }
 .apparent::after {
   content: "°";
@@ -225,6 +232,12 @@ main {
 .stats .icon {
   height: 2.6rem;
   width: 2.6rem;
+}
+.sunset .icon {
+  background: url(images/icons/moon.svg) no-repeat center center/2.1rem 2.1rem;
+}
+.sunrise .icon {
+  background: url(images/icons/sun.svg) no-repeat center center/2.1rem 2.1rem;
 }
 .precipitation .icon {
   background: url(images/icons/precipitation.svg) no-repeat center center/2.2rem
@@ -325,8 +338,8 @@ main {
 
 .hour img {
   position: absolute;
-  transform: translate(-24%, -21%);
-  width: 200%;
+  transform: translate(-24%, -20%);
+  width: 180%;
   height: auto;
 }
 
@@ -437,12 +450,12 @@ main {
     aspect-ratio: 1/0.2;
   }
   .weather-icon img {
-    width: 21%;
+    width: 35%;
   }
 
   .hour img {
-    width: 230%;
-    transform: translate(-26%, -24%);
+    width: 190%;
+    transform: translate(-26%, -22%);
   }
 
   .day img {

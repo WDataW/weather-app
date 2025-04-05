@@ -53,35 +53,33 @@ export function getLocalTime(weather) {
    * @param {number} seconds - resembles utc_offset_seconds
    * @returns {object} - has distinct properties representing 'seconds' after being converted into hour, minute, second
    */
-  function convertSecondToOffset(seconds) {
-    let minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    minutes = Math.floor(minutes % 60);
-    const second = seconds - minutes * 60 - hours * 3600;
-    return {hourOffset: hours, minuteOffset: minutes, secondOffset: second};
+  function applyOffset() {
+    console.log("used");
+    let milliseconds = (new Date()).getTime();
+    
+    console.log(milliseconds)
+    milliseconds += weather["utc_offset_seconds"] * 1000;
+    console.log(milliseconds)
+    return new Date(milliseconds);
   }
 
-  const date = new Date();
-  const timeOffset = convertSecondToOffset(weather["utc_offset_seconds"]);
+  let date = applyOffset();
 
-  let utcHour = date.getUTCHours();
-  utcHour += timeOffset["hourOffset"]; // applying offset
+  let hours = date.getUTCHours();
+  let minutes = date.getUTCMinutes();
+  const seconds = date.getUTCSeconds();
 
-  let utcMinute = date.getUTCMinutes();
-  utcMinute += timeOffset["minuteOffset"]; // applying offset
-
-  secondsTillNextMinute =
-    59 - (date.getUTCSeconds() + timeOffset["secondOffset"]); // applying offset
+  secondsTillNextMinute = 59 - seconds; // applying offset
 
   let AMPM; // using 12hours system
-  AMPM = utcHour >= 12 ? "PM" : "AM"; // 12 and over is PM
-  if (utcHour > 12) {
-    utcHour -= 12; // to ensure time stays 12 or lower, as in the 12hrs system it goes 12pm 1 2 3... 11pm -> 12am
-  } else if (utcHour == 0) {
-    utcHour += 12;
+  AMPM = hours >= 12 ? "PM" : "AM"; // 12 and over is PM
+  if (hours > 12) {
+    hours -= 12; // to ensure time stays 12 or lower, as in the 12hrs system it goes 12pm 1 2 3... 11pm -> 12am
+  } else if (hours == 0) {
+    hours = 12;
   }
 
-  return `${utcHour}:${String(utcMinute).padStart(2, "0")} ${AMPM}`;
+  return `${hours}:${String(minutes).padStart(2, "0")} ${AMPM}`;
 }
 
 let passMinuteInterval; // to be able to clear interval later
@@ -124,12 +122,12 @@ function passMinute(time) {
     minute += 1; // not a new hour, just add another minute
   }
 
-  secondsTillNextMinute = 59; // will be used to add a minute each 59000 milliseconds
+  secondsTillNextMinute = 60; // will be used to add a minute each 59000 milliseconds
   updateLocalTime(`${hour}:${String(minute).padStart(2, "0")} ${AMPM}`); // updates the HTML element that holds the local-time
 
   if (intervalFlag) {
     setInterval(
-      () => passMinute(getDisplayedWeather()), // uses the current local-time and adds a minute to it after 59000 milliseconds
+      () => passMinute(getDisplayedTime()), // uses the current local-time and adds a minute to it after 59000 milliseconds
       secondsTillNextMinute * 1000
     );
     intervalFlag = false; // to only setInterval once
@@ -142,12 +140,22 @@ function stopTrackingTime() {
   intervalFlag = true;
 }
 
+/*
+ * getDisplayedTime gets the displayed time in the HTML page
+ * @returns {string} - represents the currently displayed time in local-time 
+ *
+ *
+ */
 import {select} from "./ui.js";
-function getDisplayedWeather() {
+function getDisplayedTime() {
   return select(".local-time .value").textContent;
 }
+/*
+ * convert12to24 converts 12hr-format with AM or PM to 24hr-format
+ * @returns {string} hour - represents the time in 24hrs-format without AM or PM
+ */
 export function convert12To24() {
-  const time = getDisplayedWeather();
+  const time = getDisplayedTime();
   let hour = Number(time.slice(0, time.indexOf(":")));
   let AMPM = time.slice(time.indexOf(" ") + 1);
   if (hour == 12) {

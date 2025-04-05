@@ -49,6 +49,7 @@ function setTextContent(target, value) {
  * @param {number} dayIndex - represents the day which the 24 hours belong to. 0 means today, 1 means tomorrow... max is 6
  * @returns {void}
  */
+import {getIsDay} from "./weather.js";
 export function createHourlyWeather(weather, dayIndex) {
   /*
    * setHourlyContent sets the textContent of a specefic HTML element. The value is always an element of an array in weather["hourly"]
@@ -98,7 +99,11 @@ export function createHourlyWeather(weather, dayIndex) {
     addClass(icon, "mini-icon");
 
     const weatherImg = createElement("img");
-    weatherImg.src = "images/weather-icons/day/clear.svg"; // temporary until it becomes dynamic later
+
+    weatherImg.src = interpretWeatherCode(
+      weather["hourly"]["weather_code"][i + propertiesOffset],
+      getIsDay(i, weather, dayIndex)
+    )[1]; // temporary until it becomes dynamic later
     icon.appendChild(weatherImg);
     hour.appendChild(icon);
 
@@ -126,11 +131,9 @@ export function createHourlyWeather(weather, dayIndex) {
  */
 export function createWeatherStats(stats) {
   const statsContainer = select(".stats"); // could be changed later to specify another container
-
-  for (const key in stats) {
+  for (let key in stats) {
     const statHTML = createElement("div"); // create the container
-    addClass(statHTML, key.toLowerCase()); // key = css class. helps display the correct icon to match the stat
-    statHTML.setAttribute("title", key);
+    addClass(statHTML, key.toLowerCase()); // key = css-class. helps display the correct icon to match the stat
 
     const icon = createElement("span"); // the icon of the stat
     addClass(icon, "icon");
@@ -139,6 +142,10 @@ export function createWeatherStats(stats) {
     const value = createElement("span");
     addClass(value, "value");
     setTextContent(value, stats[key]); // displaying the value of the stat
+    if (key == "Sunrise" || key == "Sunset") {
+      key += " (24h-format)";
+    }
+    statHTML.setAttribute("title", key);
     statHTML.appendChild(value);
 
     statsContainer.appendChild(statHTML);
@@ -204,11 +211,12 @@ export function updateLocalTime(time) {
  */
 import {getCurrentStats} from "./weather.js";
 export function generatePage(weather) {
-  setLocation(weather);
-  setMainInfo(weather); // big weather icon and current temperatures
-  createLocalTime(weather); // shows local-time for a location
-  createWeatherStats(getCurrentStats(weather)); // weather stats like humidity...
-  createHourlyWeather(weather, 0); //hour by hour weather
+  setLocation(weather); // displays the location 
+  setMainInfo(weather); // large weather-icon and temperatures: current, apparent
+  createTimeNStats(weather); // time-stats section contains the local-time and weather-description
+  createWeatherStats(getCurrentStats(weather)); // stats section like humidity,sunrise,sunset...
+  createHourlyWeather(weather, 0); //hourly-weather hour by hour weather from 0-23
+  createDailyWeather(weather); //  daily-weather displays the weather for the next 6 days
 }
 
 /*
@@ -240,7 +248,7 @@ function setMainInfo(weather) {
 
   const weatherIcon = select(".weather-icon img"); // an icon representing the weather condition
   const weatherCode = currentWeather["weather_code"];
-  const isDay = currentWeather["isday"]; // a boolean indicating day or night
+  const isDay = currentWeather["is_day"]; // a boolean indicating day or night
   setWeatherIcon(weatherIcon, weatherCode, isDay);
 }
 
@@ -261,4 +269,84 @@ export function select(query) {
 function setLocation(weather) {
   const location = select(".location");
   setTextContent(location, weather["locationName"]);
+}
+
+/* 
+  * createDailyWeather creates the daily-weather section which includes the next 6 days' weather
+  * @param {object} weather - contains weather data based on a specific location
+  * @returns {void}
+*/
+import {getDayName} from "./time.js";
+function createDailyWeather(weather) {
+  const dailyContainer = select(".daily-weather");// selecting the container
+  const dailyWeather = weather["daily"]; 
+  const dates = dailyWeather["time"]; // contains the dates for today+the next 6 days
+  const interpreations = dailyWeather["weather_code"].map((code) => {  // interpretes every weather-code in 'weather_code' array
+    return interpretWeatherCode(code);
+  });
+  for (let i = 1; i < dailyWeather["time"].length; i++) {// to create the next 6 days. each is created in an iteration
+    const day = createElement("div"); // container of day's contents
+    addClass(day, "day");
+
+    const dayName = createElement("span");// day-name like 'Sun', 'Mon'
+    addClass(dayName, "name");
+    const filteredName = getDayName(dates[i]).slice(0, 3);// only first three letters
+    setTextContent(dayName, filteredName);
+    day.appendChild(dayName);
+
+    const icon = createElement("div");
+    addClass(icon, "mini-icon");
+
+    const img = createElement("img");
+    img.src = interpreations[i][1];// set the src to the url in the array which is element at index 1
+
+    icon.appendChild(img);
+    day.appendChild(icon);
+
+    const temperatureRange = createElement("div"); // highest and lowest temps
+    addClass(temperatureRange, "temperature-range");
+    const maxTemp = createElement("span");// highest temp for the day
+    addClass(maxTemp, "max");
+    addClass(maxTemp, "celesius");
+    setTextContent(maxTemp, dailyWeather["temperature_2m_max"][i]);
+    temperatureRange.appendChild(maxTemp);
+
+    const minTemp = createElement("span");// lowest temp for the day
+    addClass(minTemp, "min");
+    addClass(minTemp, "celesius");
+    setTextContent(minTemp, dailyWeather["temperature_2m_min"][i]);
+    temperatureRange.appendChild(minTemp);
+
+    day.appendChild(temperatureRange);
+    dailyContainer.appendChild(day);
+  }
+}
+
+/* 
+* createWeatherCondition creates the section where the weather-condition in text is displayed, like "Cloudy"
+* @param {number} weatherCode - the code referring to a weather-condition. will be interpreted later like 0:"Clear"
+* @returns {void}
+*/
+function createWeatherCondition(weatherCode) {
+  const targetContainer = select(".time-stats > div:first-child"); // the container of weather-condition
+
+  const weatherCondition = createElement("div"); // container of 'value'
+  addClass(weatherCondition, "weather-condition");
+
+  const value = createElement("span");// to hold the description text
+  setTextContent(value, interpretWeatherCode(weatherCode)[0]);// the element representing the weather-condition in text is always at index 0
+  weatherCondition.appendChild(value);
+
+  targetContainer.appendChild(weatherCondition);
+}
+
+
+/* 
+* createTimeStats fills the time-stats container with weather-condition and local-time
+* @param {object} weather - contains weather data based on a specific location
+* returns {void} 
+*/
+function createTimeNStats(weather) {
+  createWeatherCondition(weather["current"]["weather_code"]);
+  createLocalTime(weather);
 }
