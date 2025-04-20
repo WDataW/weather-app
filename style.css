@@ -7,10 +7,20 @@
 html,
 body {
   /* the font-size is determined based on screen width */
+  position: relative;
   font-size: calc(10px + 0.0025 * 100vw);
   line-height: 1.5;
   font-family: "AbeeZeeRegular";
   scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 0.4rem;
+  height: 0.4rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 152, 152, 0.445);
+  border-radius: 1rem;
 }
 body {
   margin: 0;
@@ -18,6 +28,42 @@ body {
   background-color: rgba(10, 40, 100, 1);
   background: linear-gradient(150deg, #08244f 0%, #134cb5 47%, #0b42ab 100%);
   background-attachment: fixed;
+}
+.loading {
+  z-index: 100000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(1rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.circle {
+  border: 1.2rem solid white;
+  border-top: 1.2rem solid gray;
+  height: 14vh;
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0turn);
+  }
+  100% {
+    transform: rotate(-1turn);
+  }
+}
+
+.hide {
+  display: none;
+}
+.show {
+  display: flex;
 }
 button {
   cursor: pointer;
@@ -289,6 +335,7 @@ main {
 /* time-stats container */
 .time-stats {
   padding-top: 1rem;
+  overflow: hidden;
 }
 /* local-time and weather-description container */
 .time-stats > div:first-child {
@@ -331,8 +378,8 @@ main {
   height: 4.7rem;
   padding: 0 2rem;
   text-wrap: nowrap;
-  overflow-x: scroll;
-  scrollbar-width: none;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .stats div {
   text-wrap: nowrap;
@@ -408,6 +455,7 @@ main {
 .hourly-weather {
   height: 20rem;
   padding: 1.8rem 0;
+  overflow: hidden;
 }
 .hourly-weather .header {
   display: flex;
@@ -431,7 +479,7 @@ main {
   flex-flow: row nowrap;
   height: 15.5rem;
   overflow-x: scroll;
-  scrollbar-width: none;
+  padding-bottom: 1rem;
 }
 .hour:first-child {
   margin-left: 1.8rem;
@@ -664,6 +712,10 @@ main {
   }
   .result {
     background-color: rgba(173, 173, 173, 0.1);
+  }
+  ::-webkit-scrollbar {
+    width: 0.7rem;
+    height: 0.7rem;
   }
 }
 @media screen and (min-width: 1450px) {
