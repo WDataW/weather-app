@@ -92,7 +92,9 @@ export async function getIpLocation() {
     } catch (error) {}
   }
   const IP = await getUserIp();
-  const response = await fetch(`https://ip-api.com/json/${IP}`);
+  const response = await fetch("https://get.geojs.io/v1/ip/geo.json");
   const data = await response.json();
+  data["lat"] = data["latitude"];
+  data["lon"] = data["longitude"];
   return data;
 }
