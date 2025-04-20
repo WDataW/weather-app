@@ -20,32 +20,47 @@
         <span class="location"></span>
       </div>
       <div class="search-container">
-        <input type="search" name="locationSearch" placeholder="Find City" />
+        <input
+          type="search"
+          name="locationSearch"
+          placeholder="Find City"
+          class="search-input"
+        />
       </div>
     </header>
     <main>
       <div class="weather-container">
         <div class="main-info">
           <div class="weather-icon">
-            <img src="images/weather-icons/day/clear.svg" alt="" />
+            <img />
           </div>
           <div class="temperatures">
             <p class="current"></p>
             <p class="apparent"></p>
           </div>
         </div>
-        <div class="time-stats container">
+        <div class="time-stats current-stats container">
           <div></div>
           <div class="stats"></div>
         </div>
-        <div class="hourly-weather container">
+
+        <div class="current-hourly hourly-weather container">
           <!-- displays weather by the hour -->
+        </div>
+        <div class="hour-stats">
+          <div></div>
+          <div></div>
         </div>
         <div class="daily-weather container">
           <div class="header">
             <span> Daily Forecast </span>
             <span class="calendar-icon"> </span>
           </div>
+        </div>
+        <div class="daily-hours"></div>
+        <div class="daily-hour-stats">
+          <div></div>
+          <div></div>
         </div>
       </div>
     </main>

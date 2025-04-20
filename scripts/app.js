@@ -14,3 +14,16 @@ async function initWeather() {
     console.error(error);
   }
 }
+
+/*
+ * displayNewWeather erases previous weather then displays a new weather selected by the user
+ * @param {object} location - contains info about a specific location. Like lat, lon...
+ * @returns {void}
+ */
+import {getWeather} from "./weather.js";
+import {erasePageContents} from "./ui.js";
+export async function displayNewWeather(location) {
+  const weather = await getWeather(location);
+  erasePageContents();
+  generatePage(weather);
+}

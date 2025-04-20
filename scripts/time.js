@@ -54,12 +54,9 @@ export function getLocalTime(weather) {
    * @returns {object} - has distinct properties representing 'seconds' after being converted into hour, minute, second
    */
   function applyOffset() {
-    console.log("used");
-    let milliseconds = (new Date()).getTime();
-    
-    console.log(milliseconds)
+    let milliseconds = new Date().getTime();
+
     milliseconds += weather["utc_offset_seconds"] * 1000;
-    console.log(milliseconds)
     return new Date(milliseconds);
   }
 
@@ -134,7 +131,7 @@ function passMinute(time) {
   }
 }
 
-function stopTrackingTime() {
+export function stopTrackingTime() {
   // will be used later for some purposes, until then it will be of no use
   clearInterval(passMinuteInterval);
   intervalFlag = true;
@@ -142,13 +139,13 @@ function stopTrackingTime() {
 
 /*
  * getDisplayedTime gets the displayed time in the HTML page
- * @returns {string} - represents the currently displayed time in local-time 
+ * @returns {string} - represents the currently displayed time in local-time
  *
  *
  */
 import {select} from "./ui.js";
 function getDisplayedTime() {
-  return select(".local-time .value").textContent;
+  return select(".current-stats .local-time .value").textContent;
 }
 /*
  * convert12to24 converts 12hr-format with AM or PM to 24hr-format
@@ -164,4 +161,20 @@ export function convert12To24() {
     hour = AMPM == "AM" ? hour : hour + 12;
   }
   return hour;
+}
+
+/*
+ * covert24to12 converts time from 24h format to 12h format with AM/PM
+ * @param {string} time - represents the time to be converted
+ * @returns {string} - contains the times in 12h format
+ */
+export function convert24to12(time) {
+  let hour = Number(time.slice(0, time.indexOf(":")));
+  const AMPM = hour >= 12 ? "PM" : "AM";
+  if (hour > 12) {
+    hour -= 12;
+  } else if (hour == 0) {
+    hour = 12;
+  }
+  return `${hour}:00 ${AMPM}`;
 }

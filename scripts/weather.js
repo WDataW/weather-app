@@ -22,13 +22,13 @@ export async function getDefaultWeather() {
 export async function getWeather(location) {
   try {
     const weatherResponse = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=weather_code,cloud_cover,rain,snowfall,temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=weather_code,precipitation_probability_max,temperature_2m_min,temperature_2m_max,sunset,sunrise,rain_sum,snowfall_sum&hourly=weather_code,precipitation_probability,temperature_2m,relative_humidity_2m,apparent_temperature,rain,snowfall,wind_direction_10m,wind_speed_10m&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${location["lat"]}&longitude=${location["lon"]}&current=weather_code,cloud_cover,temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,is_day&daily=weather_code,temperature_2m_min,temperature_2m_max,sunset,sunrise&hourly=weather_code,cloud_cover,precipitation_probability,temperature_2m,relative_humidity_2m,apparent_temperature,wind_direction_10m,wind_speed_10m&timezone=auto`
     );
     if (!weatherResponse.ok) {
       throw new Error("An Error Occured While Fetching The Weather.");
     }
     const weatherData = await weatherResponse.json();
-    processWeather(weatherData);
+    processWeather(weatherData, location);
     return weatherData;
   } catch (error) {
     console.error(error);
@@ -42,7 +42,7 @@ export async function getWeather(location) {
  */
 import {getDayName} from "./time.js";
 import {getTextDate} from "./time.js";
-function processWeather(weather) {
+function processWeather(weather, location) {
   /*
    * deleteProperties deleted properties from weather
    * @param {object} keys - array of the properties' keys that we want to delete
@@ -125,6 +125,10 @@ function processWeather(weather) {
     }
   }
 
+  function addLocationName() {
+    weather["locationName"] = `${location["name"]}, ${location["country"]}`;
+  }
+
   const keysToDelete = [
     "hourly_units",
     "current_units",
@@ -141,7 +145,8 @@ function processWeather(weather) {
   addDayName();
 
   addTextDate();
-  console.log(weather);
+
+  addLocationName();
 }
 
 // used to translate from weather_code to words.
@@ -183,8 +188,8 @@ const weatherCodeInterpretation = {
   77: ["Snow grains", "snow.svg"],
 
   // Rain showers
-  80: ["Slight Rain Showers", "heavy-rain.svg"],
-  81: ["Moderate Rain Showers", "heavy-rain.svg"],
+  80: ["Slight Rain Showers", "light-rain.svg"],
+  81: ["Moderate Rain Showers", "light-rain.svg"],
   82: ["Heavy Rain Showers", "heavy-rain.svg"],
 
   // Snow showers
@@ -223,8 +228,6 @@ export function getCurrentStats(weather) {
     "relative_humidity_2m",
     "wind_speed_10m",
     "cloud_cover",
-    "rain",
-    "snowfall",
   ];
   const statsKeys = [
     "Sunrise",
@@ -233,22 +236,24 @@ export function getCurrentStats(weather) {
     "Humidity",
     "Wind-Speed",
     "Cloud-Cover",
-    "Rain",
-    "Snowfall",
   ];
   const hour = convert12To24();
   const stats = {};
-  for (let i = 0; i < 8; i++) {// 8 stats
-    if (i === 0 || i === 1) {// first two are times of sunset/sunrise
+  for (let i = 0; i < 6; i++) {
+    // 8 stats
+    if (i === 0 || i === 1) {
+      // first two are times of sunset/sunrise
       let time = weather["daily"][statsText[i]][0];
-      time = time.slice(time.indexOf("T") + 1);// only cut the time. ignore the date
-      if (time.startsWith("0")) {// to convert time from '0H:mm' to "H:mm" 
+      time = time.slice(time.indexOf("T") + 1); // only cut the time. ignore the date
+      if (time.startsWith("0")) {
+        // to convert time from '0H:mm' to "H:mm"
         time = time.slice(1);
       }
-      stats[statsKeys[i]] = time.slice(time.indexOf("T") + 1);// if it doesn't start with '0'
+      stats[statsKeys[i]] = time.slice(time.indexOf("T") + 1); // if it doesn't start with '0'
       continue;
     }
-    if (i === 2) {// get the precipation for the hour matching the current hour in local-time
+    if (i === 2) {
+      // get the precipation for the hour matching the current hour in local-time
       stats[statsKeys[i]] = weather["hourly"][statsText[i]][hour];
       continue;
     }
@@ -257,9 +262,33 @@ export function getCurrentStats(weather) {
   return stats;
 }
 
-/* these two will be needed later */
-export function getHourlyStats() {}
-export function getDailyStats() {}
+/*
+ * getHourStats returns the stats for a specific hour. like humidity etc...
+ * @param {object} weather - contains weather data based on a specific location
+ * @param {number} hour - represents the index of the hour in the stats arrays
+ * @returns {object} stats - contains the stats for a specific hour
+ */
+export function getHourStats(weather, hour) {
+  const statsText = [
+    "apparent_temperature",
+    "precipitation_probability",
+    "relative_humidity_2m",
+    "wind_speed_10m",
+    "cloud_cover",
+  ];
+  const statsKeys = [
+    "Apparent-Temperature",
+    "Precipitation",
+    "Humidity",
+    "Wind-Speed",
+    "Cloud-Cover",
+  ];
+  const stats = {};
+  for (let i = 0; i < 5; i++) {
+    stats[statsKeys[i]] = weather["hourly"][statsText[i]][hour];
+  }
+  return stats;
+}
 
 /*
  * interpretWeatherCode takes weatherCode and returns the text description with an icon url
@@ -292,30 +321,31 @@ export function interpretWeatherCode(weatherCode, isDay = 1) {
 
 /*
  * getIsDay take the day, hour of that day, and returns 1 if the hour is within day-time else returns 0
- * @param {number} hour - represents the hour of a specific day 
+ * @param {number} hour - represents the hour of a specific day
  * @param {object} weather - contains weather data based on a specific location
  * @param {number} dayIndex - represents a day (0 means today, 1 tomorrow...) max-value = 6
  * @returns {number} - 0 stands for night, 1 stands for day
  */
 export function getIsDay(hour, weather, dayIndex) {
-  let sunset = weather["daily"]["sunset"][dayIndex];// sunsent time
- 
-  let minutes = Number(sunset.indexOf(":"));// if minutes!==0 then Add 1 to sunset(weather is displayed hour by hour, so if sunset is at 6:15 the 'night' status should show at 7:00 not 6:00)
+  let sunset = weather["daily"]["sunset"][dayIndex]; // sunsent time
+
+  let minutes = Number(sunset.indexOf(":")); // if minutes!==0 then Add 1 to sunset(weather is displayed hour by hour, so if sunset is at 6:15 the 'night' status should show at 7:00 not 6:00)
   sunset = Number(sunset.slice(sunset.indexOf("T") + 1, sunset.indexOf(":")));
   if (minutes !== 0) {
     sunset++;
   }
 
+  let sunrise = weather["daily"]["sunrise"][dayIndex]; // sunrise time
 
-  let sunrise = weather["daily"]["sunrise"][dayIndex];// sunrise time
-
-  minutes = Number(sunrise.indexOf(":"));// if minutes!==0 then Add 1 to sunrise(weather is displayed hour by hour, so if sunrise is at 6:15 the 'day' status should show at 7:00 not 6:00)
+  minutes = Number(sunrise.indexOf(":")); // if minutes!==0 then Add 1 to sunrise(weather is displayed hour by hour, so if sunrise is at 6:15 the 'day' status should show at 7:00 not 6:00)
   sunrise = Number(
-    sunrise.slice(sunrise.indexOf("T") + 1, sunrise.indexOf(":")));
+    sunrise.slice(sunrise.indexOf("T") + 1, sunrise.indexOf(":"))
+  );
   if (minutes !== 0) {
     sunrise++;
   }
-  if (hour < sunset && hour >= sunrise) {// if the hour is higher or equal to sunrise and lower than sunset then the hour is at day-time(sunrise...'day'...sunset...'night'...sunrise)
+  if (hour < sunset && hour >= sunrise) {
+    // if the hour is higher or equal to sunrise and lower than sunset then the hour is at day-time(sunrise...'day'...sunset...'night'...sunrise)
     return 1; // means day
   }
   return 0; // means night

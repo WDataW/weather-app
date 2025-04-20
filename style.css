@@ -19,7 +19,9 @@ body {
   background: linear-gradient(150deg, #08244f 0%, #134cb5 47%, #0b42ab 100%);
   background-attachment: fixed;
 }
-
+button {
+  cursor: pointer;
+}
 /* start of header section */
 header {
   margin-top: 3rem;
@@ -44,7 +46,7 @@ header {
 }
 
 .location-icon {
-  margin-top: 3px;
+  margin-top: 0.3rem;
   align-self: flex-start;
 }
 
@@ -54,21 +56,29 @@ header {
   font-size: 1.5rem;
 }
 .search-container {
+  position: relative;
   display: flex;
+  flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
-  max-width: 50%;
+  width: 100%;
 }
 .search-container input {
   box-sizing: border-box;
   border-radius: 2rem;
+
   height: 2.7rem;
-  width: 13rem;
+  width: 100%;
   background-color: transparent;
   color: white;
   border: 0.2rem solid white;
   outline: none;
   font: 1.3rem/1.5 "AbeeZeeRegular";
+}
+.search-container .unround-bottom-corners {
+  border-radius: 1.5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 input[type="search"] {
   padding-left: 2.3rem;
@@ -82,11 +92,113 @@ input[type="search"]::-webkit-search-cancel-button {
   background: url(images/icons/x.svg) no-repeat center center/40% 40%;
 }
 
+.results-container {
+  background-color: rgba(0, 16, 38, 0.788);
+  backdrop-filter: blur(0.6rem);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  padding: 0.2rem;
+  border: 0.2rem solid white;
+  box-sizing: border-box;
+  position: absolute;
+  top: 2.7rem;
+  width: 100%;
+  max-height: 20rem;
+  z-index: 1000;
+  padding-bottom: 0.4rem;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+.result {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-rows: 63% 37%;
+  grid-template-columns: 30% 70%;
+  padding: 0.4rem 0;
+  margin: 0.2rem 0;
+  width: 100%;
+  text-align: left;
+}
+.result:first-child {
+  margin-top: 0;
+}
+.result .location-name {
+  grid-column: 2/3;
+  grid-row: 1/3;
+  justify-self: left;
+  align-self: center;
+  padding-right: 0.4rem;
+}
+.result img {
+  justify-self: center;
+  align-self: center;
+  width: 80%;
+  height: 85%;
+
+  object-fit: contain;
+  grid-column: 1/2;
+  grid-row: 1/3;
+  float: left;
+}
+.result h3 {
+  color: white;
+  margin: 0;
+  font-size: 1.3rem;
+  font-family: sans-serif;
+  line-height: 1;
+}
+.result p {
+  margin: 0;
+  margin-top: 0.1rem;
+  color: rgb(184, 184, 184);
+  font-size: 0.9rem;
+  font-family: sans-serif;
+}
+.use-location {
+  font-family: sans-serif;
+  display: flex;
+
+  align-items: center;
+  flex-flow: row nowrap;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+
+  padding: 0;
+  width: 100%;
+
+  font-weight: 500;
+  height: 3rem;
+  border-radius: 1rem;
+}
+
+.use-location .use-location-icon {
+  display: inline-block;
+  height: 100%;
+  aspect-ratio: 1/1;
+  margin-left: 1rem;
+  background: url(images/icons/marker.svg) no-repeat center center/80% 80%;
+}
+.use-location .use-location-text {
+  font-size: 1.4rem;
+  font-variant: small-caps;
+  color: white;
+}
+
+.no-result h2 {
+  color: white;
+  margin-left: 2rem;
+  margin: 1rem;
+  margin-left: 2rem;
+}
 /* start of main section */
 .extendable > *:last-child {
   height: 1.4rem;
   width: 1.4rem;
   background: url(images/icons/arrow.svg) no-repeat center center/ 100% 100%;
+}
+.picked {
+  transform: rotate(0.5turn);
 }
 
 main {
@@ -124,10 +236,11 @@ main {
 }
 .weather-icon img {
   position: absolute;
+  z-index: -1;
   width: 65%;
   top: 50%;
   left: 50%;
-  transform: translate(-53%, -50%);
+  transform: translate(-54%, -50%);
 }
 
 /* temperatures */
@@ -186,6 +299,8 @@ main {
 }
 /* weather-condition */
 .weather-condition {
+  margin-right: 1rem;
+
   font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
@@ -193,7 +308,6 @@ main {
 
 /* local-time */
 .local-time {
-  margin-right: 1rem;
   height: 3rem;
   display: flex;
   align-items: center;
@@ -234,21 +348,32 @@ main {
   width: 2.6rem;
 }
 .sunset .icon {
-  background: url(images/icons/moon.svg) no-repeat center center/2.1rem 2.1rem;
+  background: url(images/icons/sunset.svg) no-repeat center center/1.8rem 1.8rem;
+  width: 2.7rem;
 }
 .sunrise .icon {
-  background: url(images/icons/sun.svg) no-repeat center center/2.1rem 2.1rem;
+  background: url(images/icons/sunrise.svg) no-repeat center center/1.8rem
+    1.8rem;
+  width: 2.7rem;
 }
 .precipitation .icon {
   background: url(images/icons/precipitation.svg) no-repeat center center/2.2rem
     2.2rem;
 }
+.apparent-temperature .icon {
+  background: url(images/icons/temperature.svg) no-repeat center center/2rem
+    2rem;
+  width: 2rem;
+}
+.apparent-temperature::after {
+  content: "°C";
+}
 .precipitation::after {
   content: "%";
 }
 .humidity .icon {
-  background: url(images/icons/humidity.svg) no-repeat center center/1.8rem
-    1.8rem;
+  background: url(images/icons/humidity.svg) no-repeat center center/2.2rem
+    2.2rem;
 }
 .humidity::after {
   content: "%";
@@ -309,9 +434,11 @@ main {
   scrollbar-width: none;
 }
 .hour:first-child {
-  padding-left: 1.8rem;
+  margin-left: 1.8rem;
 }
 .hour {
+  position: relative;
+  padding: 0 1rem;
   /* the container for temperature + mini weather icon + time*/
   font-size: 1.8rem;
   flex: 1;
@@ -320,9 +447,18 @@ main {
   justify-content: space-evenly;
   align-items: center;
 }
-.hour:not(:last-child) {
-  margin-right: 2rem;
+.hour-box:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
+.hour .hour-box {
+  z-index: 999;
+  border-radius: 1rem;
+
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 .hour p {
   text-align: center;
   margin: 0;
@@ -346,6 +482,21 @@ main {
 /* start of daily weather sectiom */
 .daily-weather {
   padding: 1.8rem;
+}
+
+.day {
+  position: relative;
+}
+.day-box:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.day .day-box {
+  z-index: 999;
+  border-radius: 1rem;
+
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 .daily-weather .header {
   display: flex;
@@ -376,10 +527,19 @@ main {
 }
 .day .name {
   font-family: monospace;
-  padding-right: 1.9rem;
-  background: url(images/icons/arrow.svg) no-repeat center right/ 1.4rem 1.4rem;
+  padding-right: 1rem;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
+.day-arrow {
+  margin-left: 0.7rem;
+  height: 1.4rem;
+  width: 1.4rem;
+  background: url(images/icons/arrow.svg) no-repeat center center / 1.4rem
+    1.4rem;
+}
 .day span {
   font-size: 2rem;
 }
@@ -413,7 +573,7 @@ main {
 
   .day {
     box-sizing: border-box;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
     width: 100%;
     justify-content: space-evenly;
   }
@@ -437,8 +597,20 @@ main {
   .weather-icon img {
     width: 50%;
   }
+  .search-container {
+    width: 20rem;
+  }
 }
-
+@media screen and (min-width: 650px) {
+  .result h3 {
+    font-size: 1.4rem;
+    font-family: sans-serif;
+  }
+  .result p {
+    font-family: sans-serif;
+    font-size: 1.1rem;
+  }
+}
 @media screen and (min-width: 900px) {
   main {
     margin-top: 1rem;
@@ -470,14 +642,43 @@ main {
     width: 2rem;
     height: 2rem;
   }
+  .search-container {
+    width: 30rem;
+  }
   .search-container input {
     height: 2.8rem;
-    width: 15rem;
     font-size: 1.5rem;
+  }
+
+  .use-location {
+    height: 2.5rem;
+  }
+  .use-location .use-location-text {
+    font-size: 1.6rem;
+  }
+  .result img {
+    height: 80%;
+  }
+  .results-container {
+    background-color: rgba(0, 16, 38, 0.3);
+  }
+  .result {
+    background-color: rgba(173, 173, 173, 0.1);
   }
 }
 @media screen and (min-width: 1450px) {
   html {
     font-size: calc(10px + 0.0045 * 100vw);
+  }
+  .search-container input {
+    height: 3.5rem;
+  }
+  .location {
+    font-size: 3rem;
+  }
+  .location-icon {
+    height: 3rem;
+    width: 3rem;
+    margin-top: 0.5rem;
   }
 }
