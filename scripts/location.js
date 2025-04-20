@@ -77,22 +77,7 @@ export function constructLocationName(locationsArray, indexOfLocation) {
  * @returns {object} data - contains the user's IP location info
  */
 export async function getIpLocation() {
-  /*
-   * getUserIp gets the user IP address
-   * @returns {string} - the user's IP address
-   */
-  async function getUserIp() {
-    try {
-      const response = await fetch("https://edns.ip-api.com/json");
-      if (!response.ok) {
-        throw new Error("An Error Occured While Fetching User's IP address.");
-      }
-      const data = await response.json();
-      return data["dns"]["ip"];
-    } catch (error) {}
-  }
-  const IP = await getUserIp();
-  const response = await fetch("https://get.geojs.io/v1/ip/geo.json");
+  const response = await fetch("http://get.geojs.io/v1/ip/geo.json");
   const data = await response.json();
   data["lat"] = data["latitude"];
   data["lon"] = data["longitude"];

@@ -271,6 +271,7 @@ export function generatePage(weather) {
   createWeatherStats(getCurrentStats(weather), ".stats"); // stats section like humidity,sunrise,sunset...
   createHourlyWeather(weather, 0, ".hourly-weather"); //hourly-weather hour by hour weather from 0-23
   createDailyWeather(weather); //  daily-weather displays the weather for the next 6 days
+  stopLoading();
 }
 
 /*
@@ -785,6 +786,7 @@ function createMessageDiv(message) {
  */
 import {stopTrackingTime} from "./time.js";
 export function erasePageContents() {
+  startLoading();
   stopTrackingTime(); // stop updating the local time
   eraseCurrentStats(); // erase current stats which is displayed right after main-info
   eraseCurrentHourly(); // erase the 24 hours of today
@@ -874,4 +876,24 @@ function eraseDailyHourStats() {
     removeClass(stats.parentElement, "time-stats");
     removeClass(stats.parentElement, "container");
   }
+}
+
+const loading = select(".loading");
+
+/*
+ * stopLoading hides the loading screen
+ * @returns {void}
+ */
+function stopLoading() {
+  removeClass(loading, "show");
+  addClass(loading, "hide");
+}
+
+/*
+ * startLoading shows the loading screen
+ * @returns {void}
+ */
+function startLoading() {
+  removeClass(loading, "hide");
+  addClass(loading, "show");
 }
