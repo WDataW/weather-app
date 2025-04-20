@@ -83,7 +83,7 @@ export async function getIpLocation() {
    */
   async function getUserIp() {
     try {
-      const response = await fetch("http://edns.ip-api.com/json");
+      const response = await fetch("https://edns.ip-api.com/json");
       if (!response.ok) {
         throw new Error("An Error Occured While Fetching User's IP address.");
       }
@@ -92,7 +92,7 @@ export async function getIpLocation() {
     } catch (error) {}
   }
   const IP = await getUserIp();
-  const response = await fetch(`http://ip-api.com/json/${IP}`);
+  const response = await fetch(`https://ip-api.com/json/${IP}`);
   const data = await response.json();
   return data;
 }
