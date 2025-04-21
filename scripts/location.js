@@ -83,3 +83,52 @@ export async function getIpLocation() {
   data["lon"] = data["longitude"];
   return data;
 }
+
+/*
+ * getNavigatorLocation gets the coordinates of the user provided by the web browser
+ * @returns {object} - contains the latitude and longitude
+ */
+export async function getNavigatorLocation() {
+  if ("geolocation" in navigator) {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        (error) => reject(error)
+      );
+    });
+  }
+}
+
+/*
+ * getLocationInfo gets the info of a location based on latitude and longitude
+ * @param {object} coords - holds the lat and lon
+ * @returns {object} - holds the info of the location. lat,lon,city,country
+ */
+export async function getLocationInfo(coords) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${coords["lat"]}&lon=${coords["lon"]}&zoom=13&format=json`
+    );
+    if (!response.ok) {
+      throw new Error("Couldn't fetch location ");
+    }
+    const data = await response.json();
+    const locationInfo = {};
+    const displayName = data["display_name"];
+    const cityName = displayName.slice(0, displayName.indexOf(","));
+    const countryName = displayName.slice(displayName.lastIndexOf(",") + 2);
+    return {
+      name: cityName,
+      country: countryName,
+      lat: coords["lat"],
+      lon: coords["lon"],
+    };
+  } catch (error) {
+    console.error(error);
+  }
+}
