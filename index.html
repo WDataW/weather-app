@@ -26,7 +26,7 @@
         <input
           type="search"
           name="locationSearch"
-          placeholder="Find City"
+          placeholder="Find Location"
           class="search-input"
         />
       </div>
@@ -47,26 +47,31 @@
           <div class="stats"></div>
         </div>
 
-        <div class="current-hourly hourly-weather container">
+        <div class="current-hourly hourly-weather container" id="today-hours">
           <!-- displays weather by the hour -->
         </div>
         <div class="hour-stats">
           <div></div>
           <div></div>
         </div>
-        <div class="daily-weather container">
+        <div class="daily-weather container" id="daily-weather">
           <div class="header">
             <span> Daily Forecast </span>
             <span class="calendar-icon"> </span>
           </div>
         </div>
-        <div class="daily-hours"></div>
+        <div class="daily-hours" id="daily-hours"></div>
         <div class="daily-hour-stats">
           <div></div>
           <div></div>
         </div>
       </div>
     </main>
-    <footer></footer>
+    <footer>
+      <div class="footer-wrapper">
+        <div class="wdataw"><span>W</span><span>data</span><span>W</span></div>
+        <a class="github" href="https://github.com/WDataW"></a>
+      </div>
+    </footer>
   </body>
 </html>
