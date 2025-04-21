@@ -46,6 +46,7 @@ export function getTextDate(dateString) {
  * @param {object} weather - contains contains weather data based on a specific location
  * @returns {string} - contains utc-time after adding the offset to it (representing local-time)
  */
+import {setTheme} from "./ui.js";
 let secondsTillNextMinute; // will be used later to track the time to keep it updating every new minute
 export function getLocalTime(weather) {
   /*
@@ -66,6 +67,7 @@ export function getLocalTime(weather) {
   let minutes = date.getUTCMinutes();
   const seconds = date.getUTCSeconds();
 
+  setTheme([hours, minutes], weather);
   secondsTillNextMinute = 59 - seconds; // applying offset
 
   let AMPM; // using 12hours system
@@ -83,25 +85,28 @@ let passMinuteInterval; // to be able to clear interval later
 /*
  * trackTime initiates the process of updating time each minute
  * @param {string} time - represents current time, formatted 'hour:minute(padded with 0) AMPM'
+ * @param {object} weather - contains contains weather data based on a specific location
  * @returns {void}
  */
-export function trackTime(time) {
+export function trackTime(time, weather) {
   passMinuteInterval = setTimeout(() => {
-    passMinute(time);
+    passMinute(time, weather);
   }, secondsTillNextMinute * 1000);
 }
 /*
  * passMinute updates the time after each minute passes
  * @param {string} time - represents current time, formatted 'hour:minute(padded with 0) AMPM'
+ * @param {object} weather - contains contains weather data based on a specific location
  * @returns {void}
  */
 let intervalFlag = true; // to invoke setInterval only once
 import {updateLocalTime} from "./ui.js";
 
-function passMinute(time) {
+function passMinute(time, weather) {
   let hour = Number(time.slice(0, time.indexOf(":"))); // cuts the hour part of 'time'
   let minute = Number(time.slice(time.indexOf(":") + 1, time.indexOf(" "))); // cuts the minute part of 'time'
   let AMPM = time.slice(time.indexOf(" ") + 1);
+
   if (minute == 59) {
     minute = 0;
     // new hour
@@ -121,10 +126,11 @@ function passMinute(time) {
 
   secondsTillNextMinute = 60; // will be used to add a minute each 59000 milliseconds
   updateLocalTime(`${hour}:${String(minute).padStart(2, "0")} ${AMPM}`); // updates the HTML element that holds the local-time
+  setTheme([convert12To24(getDisplayedTime()), minute], weather);
 
   if (intervalFlag) {
     setInterval(
-      () => passMinute(getDisplayedTime()), // uses the current local-time and adds a minute to it after 59000 milliseconds
+      () => passMinute(getDisplayedTime(), weather), // uses the current local-time and adds a minute to it after 59000 milliseconds
       secondsTillNextMinute * 1000
     );
     intervalFlag = false; // to only setInterval once
@@ -144,15 +150,14 @@ export function stopTrackingTime() {
  *
  */
 import {select} from "./ui.js";
-function getDisplayedTime() {
+export function getDisplayedTime() {
   return select(".current-stats .local-time .value").textContent;
 }
 /*
  * convert12to24 converts 12hr-format with AM or PM to 24hr-format
  * @returns {string} hour - represents the time in 24hrs-format without AM or PM
  */
-export function convert12To24() {
-  const time = getDisplayedTime();
+export function convert12To24(time) {
   let hour = Number(time.slice(0, time.indexOf(":")));
   let AMPM = time.slice(time.indexOf(" ") + 1);
   if (hour == 12) {

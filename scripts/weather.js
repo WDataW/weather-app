@@ -8,6 +8,7 @@ export async function getDefaultWeather() {
     const defaultLocation = await getIpLocation();
     const defaultWeather = await getWeather(defaultLocation);
     defaultWeather.locationName = `${defaultLocation["city"]}, ${defaultLocation["country"]}`;
+    console.log(defaultWeather);
     return defaultWeather;
   } catch (error) {
     console.error(error);
@@ -171,7 +172,7 @@ const weatherCodeInterpretation = {
   57: ["Heavy Freezing Drizzle", "drizzle.svg"],
 
   // Rain
-  61: ["SLight Rain", "light-rain.svg"],
+  61: ["Slight Rain", "light-rain.svg"],
   63: ["Moderate Rain", "light-rain.svg"],
   65: ["Heavy Rain", "heavy-rain.svg"],
 
@@ -197,7 +198,7 @@ const weatherCodeInterpretation = {
   86: ["Heavy Snow Showers", "snow.svg"],
 
   // Thunderstorm
-  95: ["Thunder Storms", "thunderstorm.svg"],
+  95: ["Thunderstorms", "thunderstorm.svg"],
 
   // Thunderstorm with hail. NOTE: available in Central Europe only.
   96: ["Thunderstorm With Slight Hail", "thunderstorm.svg"],
@@ -219,6 +220,7 @@ export function getWeatherDescription(weatherCode) {
  * @returns {object} stats - represents all the 7 stats in one array
  */
 import {convert12To24} from "./time.js";
+import {getDisplayedTime} from "./time.js";
 export function getCurrentStats(weather) {
   const statsText = [
     // the stats we are gathering
@@ -227,6 +229,7 @@ export function getCurrentStats(weather) {
     "precipitation_probability",
     "relative_humidity_2m",
     "wind_speed_10m",
+    "wind_direction_10m",
     "cloud_cover",
   ];
   const statsKeys = [
@@ -235,9 +238,10 @@ export function getCurrentStats(weather) {
     "Precipitation",
     "Humidity",
     "Wind-Speed",
+    "Wind-Direction",
     "Cloud-Cover",
   ];
-  const hour = convert12To24();
+  const hour = convert12To24(getDisplayedTime());
   const stats = {};
   for (let i = 0; i < 6; i++) {
     // 8 stats
@@ -274,6 +278,7 @@ export function getHourStats(weather, hour) {
     "precipitation_probability",
     "relative_humidity_2m",
     "wind_speed_10m",
+    "wind_direction_10m",
     "cloud_cover",
   ];
   const statsKeys = [
@@ -281,6 +286,7 @@ export function getHourStats(weather, hour) {
     "Precipitation",
     "Humidity",
     "Wind-Speed",
+    "Wind-Direction",
     "Cloud-Cover",
   ];
   const stats = {};

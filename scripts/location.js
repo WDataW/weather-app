@@ -77,7 +77,7 @@ export function constructLocationName(locationsArray, indexOfLocation) {
  * @returns {object} data - contains the user's IP location info
  */
 export async function getIpLocation() {
-  const response = await fetch("https://get.geojs.io/v1/ip/geo.json");
+  const response = await fetch("http://get.geojs.io/v1/ip/geo.json");
   const data = await response.json();
   data["lat"] = data["latitude"];
   data["lon"] = data["longitude"];
