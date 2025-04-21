@@ -190,17 +190,24 @@ export function createWeatherStats(stats, container) {
 
     const statHTML = createElement("div"); // create the container
     addClass(statHTML, key.toLowerCase()); // key = css-class. helps display the correct icon to match the stat
+    statHTML.setAttribute("role", "button");
 
+    statHTML.addEventListener("click", () => {
+      scrollIntoView("definitions");
+    });
+    statHTML.addEventListener("keydown", (event) => {
+      if (event.key == "Enter") {
+        scrollIntoView("definitions");
+      }
+    });
     const icon = createElement("span"); // the icon of the stat
     addClass(icon, "icon");
+    statHTML.setAttribute("tabIndex", 0);
     statHTML.appendChild(icon);
 
     const value = createElement("span");
     addClass(value, "value");
     setTextContent(value, stats[key]); // displaying the value of the stat
-    if (key == "Sunrise" || key == "Sunset") {
-      key += " (24h-format)";
-    }
 
     statHTML.setAttribute("title", key);
     statHTML.appendChild(value);
@@ -736,6 +743,7 @@ searchIput.addEventListener("blur", () => {
  * createUseCurrentLocation creates a button to allow the user to pick their exact location
  * @returns {HTMLElement} container - is the button with its children
  */
+import {displayUserWeather} from "./app.js";
 function createUseCurrrentLocation() {
   const container = createElement("button");
   addClass(container, "use-location");
@@ -751,7 +759,10 @@ function createUseCurrrentLocation() {
       }
     }, 105);
   });
-
+  container.addEventListener("click", (event) => {
+    displayUserWeather();
+    setTimeout(() => collapseSearch(), 105);
+  });
   const icon = createElement("span"); //icon. Looks like target icon
   addClass(icon, "use-location-icon");
 
@@ -994,6 +1005,11 @@ export function setTheme(time, weather) {
   }
 }
 
+/*
+ * scrolIntoView is used to scroll smoothly to a specific HTMLElement
+ * @param {string} targetID - represents the ID of the HTMLElement to scroll to
+ * @returns {void}
+ */
 function scrollIntoView(targetID) {
   document.getElementById(targetID).scrollIntoView({behavior: "smooth"});
 }

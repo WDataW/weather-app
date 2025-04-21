@@ -30,7 +30,6 @@ export async function getWeather(location) {
     const weatherData = await weatherResponse.json();
     processWeather(weatherData, location);
     return weatherData;
-    console.log(weatherData);
   } catch (error) {
     console.error(error);
   }

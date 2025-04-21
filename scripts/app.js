@@ -61,3 +61,15 @@ function startUpdatingWeather(previousWeather) {
     updateWeather(previousWeather);
   }, msTillNextUpdate());
 }
+
+/*
+ * displayUserWeather displays the user weather depending on his exact location
+ * @returns {void};
+ */
+import {getLocationInfo} from "./location.js";
+import {getNavigatorLocation} from "./location.js";
+export async function displayUserWeather() {
+  const coords = await getNavigatorLocation();
+  const locationInfo = await getLocationInfo(coords);
+  displayNewWeather(locationInfo);
+}
