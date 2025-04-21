@@ -8,7 +8,6 @@ export async function getDefaultWeather() {
     const defaultLocation = await getIpLocation();
     const defaultWeather = await getWeather(defaultLocation);
     defaultWeather.locationName = `${defaultLocation["city"]}, ${defaultLocation["country"]}`;
-    console.log(defaultWeather);
     return defaultWeather;
   } catch (error) {
     console.error(error);
@@ -31,6 +30,7 @@ export async function getWeather(location) {
     const weatherData = await weatherResponse.json();
     processWeather(weatherData, location);
     return weatherData;
+    console.log(weatherData);
   } catch (error) {
     console.error(error);
   }

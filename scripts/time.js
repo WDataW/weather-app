@@ -82,6 +82,7 @@ export function getLocalTime(weather) {
 }
 
 let passMinuteInterval; // to be able to clear interval later
+let timeoutID;
 /*
  * trackTime initiates the process of updating time each minute
  * @param {string} time - represents current time, formatted 'hour:minute(padded with 0) AMPM'
@@ -89,7 +90,7 @@ let passMinuteInterval; // to be able to clear interval later
  * @returns {void}
  */
 export function trackTime(time, weather) {
-  passMinuteInterval = setTimeout(() => {
+  timeoutID = setTimeout(() => {
     passMinute(time, weather);
   }, secondsTillNextMinute * 1000);
 }
@@ -129,8 +130,10 @@ function passMinute(time, weather) {
   setTheme([convert12To24(getDisplayedTime()), minute], weather);
 
   if (intervalFlag) {
-    setInterval(
-      () => passMinute(getDisplayedTime(), weather), // uses the current local-time and adds a minute to it after 59000 milliseconds
+    passMinuteInterval = setInterval(
+      () => {
+        passMinute(getDisplayedTime(), weather);
+      }, // uses the current local-time and adds a minute to it after 59000 milliseconds
       secondsTillNextMinute * 1000
     );
     intervalFlag = false; // to only setInterval once
@@ -139,6 +142,7 @@ function passMinute(time, weather) {
 
 export function stopTrackingTime() {
   // will be used later for some purposes, until then it will be of no use
+  clearTimeout(timeoutID);
   clearInterval(passMinuteInterval);
   intervalFlag = true;
 }
@@ -182,4 +186,15 @@ export function convert24to12(time) {
     hour = 12;
   }
   return `${hour}:00 ${AMPM}`;
+}
+
+/*
+ * minutesTillNextUpdate calculates how much milliseconds are left until one of these are reached: 15, 30, 45, 00. since the weather API updates each 15 minutes
+ * @returns {number} minutesTillNextUpdate - holds the amount of milliseconds until the next update is available
+ */
+export function msTillNextUpdate() {
+  const time = new Date();
+  const minutesTillNextUpdate = 15 - (time.getUTCMinutes() % 15);
+  const seconds = time.getUTCSeconds();
+  return minutesTillNextUpdate * 60000 - seconds * 1000;
 }

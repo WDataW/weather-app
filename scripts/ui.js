@@ -515,6 +515,7 @@ function processHourClick(weather, event) {
   const lastClickedHour = select(`${grandParent} .picked`);
   const currentClickedHour = parent.querySelector(".hour>div:last-child");
 
+  scrollIntoView(select(grandParent).id);
   if (lastClickedHour) {
     // if there is an already picked hour, reset the 'picked' status, to allow for a new hour to be displayed
     unPick(lastClickedHour, container);
@@ -574,18 +575,21 @@ function processDayClick(weather, event) {
   const lastClickedDay = select(".daily-weather .picked");
   const currentClickedDay =
     event.target.parentElement.querySelector(".day-arrow");
+
   if (lastClickedDay) {
     // if there is an already picked hour, reset the 'picked' status
     unPickDay(lastClickedDay, event);
 
     if (currentClickedDay == lastClickedDay) {
       // means if the clicked day is the last day itself then the container should be closed (first click opens and the other hides it)
+      scrollIntoView(select(".daily-weather").id);
       closeDayStats();
       return;
     }
   }
   pickDay(currentClickedDay); //else: pick the clicked day and display its hours
   createDailyHours(weather, event);
+  scrollIntoView(select(".daily-weather").id);
 }
 
 /*
@@ -988,4 +992,8 @@ export function setTheme(time, weather) {
   } else if (currentTime >= sunset && currentTime < 2359) {
     initTheme("night", "rgba(155, 152, 152, 0.445)");
   }
+}
+
+function scrollIntoView(targetID) {
+  document.getElementById(targetID).scrollIntoView({behavior: "smooth"});
 }
