@@ -129,7 +129,7 @@ export function createHourlyWeather(weather, dayIndex, container) {
     addClass(hour, "hour");
     addClass(hour, "extendable");
 
-    const hourBox = createElement("div"); // to hover/click each hour
+    const hourBox = createElement("button"); // to hover/click each hour
     addClass(hourBox, "hour-box");
     hourBox.setAttribute("id", `D${dayIndex}H${i + propertiesOffset}`);
     hourBox.addEventListener("click", (event) => {
@@ -182,6 +182,12 @@ export function createHourlyWeather(weather, dayIndex, container) {
 export function createWeatherStats(stats, container) {
   const statsContainer = select(container); // could be changed later to specify another container
   for (let key in stats) {
+    if (key == "Wind-Direction") {
+      const windSpeed = statsContainer.querySelector(".wind-speed .icon");
+      windSpeed.style = `transform:rotate(${stats[key]}deg)`;
+      continue;
+    }
+
     const statHTML = createElement("div"); // create the container
     addClass(statHTML, key.toLowerCase()); // key = css-class. helps display the correct icon to match the stat
 
@@ -242,7 +248,7 @@ export function createLocalTime(weather) {
   const value = createElement("span"); // the value of time, like '4:34 PM'
   addClass(value, "value");
   setTextContent(value, getLocalTime(weather));
-  trackTime(value.textContent); // to start updating the time every minute
+  trackTime(value.textContent, weather); // to start updating the time every minute
   container.appendChild(value);
 
   targetContainer.appendChild(container);
@@ -344,7 +350,7 @@ function createDailyWeather(weather) {
     // to create the next 6 days. each is created in an iteration
     const day = createElement("div"); // container of day's contents
     addClass(day, "day");
-    const dayBox = createElement("div");
+    const dayBox = createElement("button");
     addClass(dayBox, "day-box");
     dayBox.setAttribute("id", `D${i}`);
     dayBox.addEventListener("click", (event) => {
@@ -644,7 +650,6 @@ searchIput.addEventListener("focus", () => {
   const useLocation = select(".use-location");
   if (useLocation) {
   } else {
-    console.log(useLocation);
     expandSearch();
   } // when the search input is focused then expand the search component to allow for displaying search results etc...
 });
@@ -703,9 +708,11 @@ function expandSearch() {
  * @returns {void}
  */
 function collapseSearch() {
-  removeClass(searchIput, "unround-bottom-corners"); // go back to normal
-  const resultsContainer = select(".results-container");
-  resultsContainer.remove();
+  try {
+    removeClass(searchIput, "unround-bottom-corners"); // go back to normal
+    const resultsContainer = select(".results-container");
+    resultsContainer.remove();
+  } catch (error) {}
 }
 
 searchIput.addEventListener("blur", () => {
@@ -896,4 +903,89 @@ function stopLoading() {
 function startLoading() {
   removeClass(loading, "hide");
   addClass(loading, "show");
+}
+
+/*
+ * setTheme sets the bg-color of the body element representing the page theme
+ * @param {object} time - an array holding [hour,minute]
+ * @param {object} weather - contains contains weather data based on a specific location
+ * @returns {void}
+ */
+export function setTheme(time, weather) {
+  /*
+   * initTheme initializes the theme type and scrollbar thumb color
+   * @param {string} theme - represents the theme like 'morning'
+   * @param {string} thumb - represents the scrollbar thumb color
+   * @returns {void}
+   */
+  function initTheme(theme, thumb) {
+    resetBodyClasses();
+    resetContainerColor();
+    setStyleProperty("--color-scroll-thumb", thumb);
+    addClass(body, theme);
+
+    const weatherCode = weather["current"]["weather_code"];
+    if (
+      [
+        3, 53, 55, 57, 63, 65, 67, 71, 73, 75, 77, 81, 82, 85, 86, 95, 96, 99,
+      ].includes(weatherCode) &&
+      ["morning", "noon", "evening"].includes(theme)
+    ) {
+      initTheme("dark-day", "rgba(155, 152, 152, 0.445)");
+    }
+  }
+  /*
+   * resetContainerColor resets .container background-color to the default color i.e. #00000026
+   * @returns {void}
+   */
+  function resetContainerColor() {
+    setStyleProperty("--color-container", "#00000026");
+  }
+
+  /*
+   * setStyleProperty sets the value of a style property (setting values for css variables)
+   * @param {string} property - property name
+   * @param {string} value - the value to assign to the property
+   * @returns {void}
+   */
+  function setStyleProperty(property, value) {
+    document.documentElement.style.setProperty(property, value);
+  }
+  /*
+   * resetBodyClasses removes the class from body.classList
+   * @returns {void}
+   */
+  function resetBodyClasses() {
+    removeClass(body, body.classList[0]);
+  }
+
+  const body = document.body;
+
+  // the idea here is to convert times to numbers to make it easier to compare between them
+  time[0] = time[1] < 10 ? time[0] * 10 : time[0]; // to account for situations like 1:01 -> 101
+  let currentTime = Number(time.join(""));
+
+  let sunrise = weather["daily"]["sunrise"][0];
+  sunrise = sunrise.slice(sunrise.indexOf("T") + 1);
+  sunrise = Number(sunrise.replace(":", ""));
+
+  let sunset = weather["daily"]["sunset"][0];
+  sunset = sunset.slice(sunset.indexOf("T") + 1);
+  sunset = Number(sunset.replace(":", ""));
+  let evening = sunset - 200;
+
+  // timeline=    0:00       sunrise        10:00         sunset-200         sunset         0:00
+  // theme   =   midnight     morning        noon        evening           night       midnight
+  if (currentTime >= 0 && currentTime < sunrise) {
+    initTheme("midnight", "rgba(155, 152, 152, 0.445)");
+  } else if (currentTime >= sunrise && currentTime < 1000) {
+    initTheme("morning", "rgba(214, 214, 214, 0.445)");
+    setStyleProperty("--color-container", "#00000038");
+  } else if (currentTime >= 1000 && currentTime < evening) {
+    initTheme("noon", "rgba(214, 214, 214, 0.445)");
+  } else if (currentTime >= evening && currentTime < sunset) {
+    initTheme("evening", "rgba(155, 152, 152, 0.445)");
+  } else if (currentTime >= sunset && currentTime < 2359) {
+    initTheme("night", "rgba(155, 152, 152, 0.445)");
+  }
 }
