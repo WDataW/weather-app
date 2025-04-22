@@ -11,6 +11,7 @@ A sleek, responsive weather app that delivers accurate 7-day forecasts and hour-
 ### Mobile View
 
 <img src="images/screenshots/mobile.jpg" alt="Mobile Screenshot" width="350"/>
+
 ## Live Demo
 
 👉 [wdataw.github.io/weather-app](https://wdataw.github.io/weather-app/)
