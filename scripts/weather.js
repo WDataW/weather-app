@@ -7,7 +7,9 @@ export async function getDefaultWeather() {
   try {
     const defaultLocation = await getIpLocation();
     const defaultWeather = await getWeather(defaultLocation);
-    defaultWeather.locationName = `${defaultLocation["city"]}, ${defaultLocation["country"]}`;
+    defaultWeather.locationName = `${defaultLocation["city"]}, ${
+      defaultLocation["country"] || ""
+    }`;
     return defaultWeather;
   } catch (error) {
     console.error(error);
@@ -126,7 +128,13 @@ function processWeather(weather, location) {
   }
 
   function addLocationName() {
-    weather["locationName"] = `${location["name"]}, ${location["country"]}`;
+    weather["locationName"] = `${location["name"]}, ${
+      location["country"] ||
+      location["admin1"] ||
+      location["admin2"] ||
+      location["admin3"] ||
+      ""
+    }`;
   }
 
   const keysToDelete = [

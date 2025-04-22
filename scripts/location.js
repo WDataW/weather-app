@@ -98,7 +98,10 @@ export async function getNavigatorLocation() {
             lon: position.coords.longitude,
           });
         },
-        (error) => reject(error)
+        (error) => reject(error),
+        {
+          enableHighAccuracy: true,
+        }
       );
     });
   }
