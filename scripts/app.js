@@ -4,7 +4,7 @@ initWeather();
  * initWeather initializes the displayed weather info in index.html when the user first enters the page
  * @returns {void}
  */
-import {generatePage} from "./ui.js";
+import {generatePage, stopLoading} from "./ui.js";
 import {getDefaultWeather} from "./weather.js";
 async function initWeather() {
   try {
@@ -66,10 +66,18 @@ function startUpdatingWeather(previousWeather) {
  * displayUserWeather displays the user weather depending on his exact location
  * @returns {void};
  */
+import {startLoading} from "./ui.js";
 import {getLocationInfo} from "./location.js";
 import {getNavigatorLocation} from "./location.js";
 export async function displayUserWeather() {
-  const coords = await getNavigatorLocation();
-  const locationInfo = await getLocationInfo(coords);
-  displayNewWeather(locationInfo);
+  try {
+    startLoading();
+    const coords = await getNavigatorLocation();
+    const locationInfo = await getLocationInfo(coords);
+    displayNewWeather(locationInfo);
+    stopLoading();
+  } catch (error) {
+    console.error(error);
+    stopLoading();
+  }
 }

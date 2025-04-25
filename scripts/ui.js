@@ -906,7 +906,7 @@ const loading = select(".loading");
  * stopLoading hides the loading screen
  * @returns {void}
  */
-function stopLoading() {
+export function stopLoading() {
   removeClass(loading, "show");
   addClass(loading, "hide");
 }
@@ -915,7 +915,7 @@ function stopLoading() {
  * startLoading shows the loading screen
  * @returns {void}
  */
-function startLoading() {
+export function startLoading() {
   removeClass(loading, "hide");
   addClass(loading, "show");
 }
